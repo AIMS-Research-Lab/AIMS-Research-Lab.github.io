@@ -29,13 +29,30 @@ function init(canvas) {
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
   camera.position.set(0, 0, 26);
 
-  scene.add(new THREE.HemisphereLight(0xf4fffc, 0x2f86de, 1.5));
+  const hemi = new THREE.HemisphereLight(0xf4fffc, 0x2f86de, 1.5);
+  scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, 2.0);
   key.position.set(6, 10, 12);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0x8ff0d4, 1.2);
   rim.position.set(-10, -6, 4);
   scene.add(rim);
+
+  // Light / dark palettes for fog and lighting (cube colours stay the same)
+  const THEMES = {
+    light: { fog: 0xe6f8f6, sky: 0xf4fffc, ground: 0x2f86de, hemi: 1.5, key: 2.0, rim: 1.2 },
+    dark: { fog: 0x071416, sky: 0xbff6ea, ground: 0x0b2e4a, hemi: 1.05, key: 1.6, rim: 1.6 },
+  };
+  function applyTheme() {
+    const t = THEMES[document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"];
+    scene.fog.color.setHex(t.fog);
+    hemi.color.setHex(t.sky);
+    hemi.groundColor.setHex(t.ground);
+    hemi.intensity = t.hemi;
+    key.intensity = t.key;
+    rim.intensity = t.rim;
+  }
+  applyTheme();
 
   const geo = new THREE.BoxGeometry(1, 1, 1);
   const solid = new THREE.MeshStandardMaterial({ roughness: 0.3, metalness: 0.05 });
@@ -184,6 +201,11 @@ function init(canvas) {
     layout();
     if (reduced) draw(0);
   }).observe(host);
+
+  new MutationObserver(() => {
+    applyTheme();
+    if (reduced) draw(0);
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   if (reduced) draw(0);
   else loop();

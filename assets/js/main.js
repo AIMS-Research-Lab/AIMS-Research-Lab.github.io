@@ -36,6 +36,13 @@
   const ARROW_UR =
     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg>';
 
+  const SUN =
+    '<svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">' +
+    '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>';
+  const MOON =
+    '<svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>';
+
   const S = 'fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"';
   const ICONS = {
     // Equations meet data: a field curve with sampled points
@@ -82,10 +89,13 @@
         <a class="brand" href="index.html" aria-label="${SITE.name}, home">
           <span class="brand-mark">${LOGO}</span><span class="brand-name">AIMS</span><span>Research Lab</span>
         </a>
-        <nav class="nav" aria-label="Primary">${links}</nav>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav">
-          <span class="bars" aria-hidden="true"><i></i><i></i></span>Menu
-        </button>
+        <div class="header-actions">
+          <nav class="nav" aria-label="Primary">${links}</nav>
+          <button class="theme-toggle" type="button" aria-label="Toggle dark mode">${SUN}${MOON}</button>
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav">
+            <span class="bars" aria-hidden="true"><i></i><i></i></span><span class="menu-label">Menu</span>
+          </button>
+        </div>
       </header>
       <div class="mobile-nav" id="mobile-nav">
         <ul>${mobile}</ul>
@@ -128,6 +138,34 @@
   const onScroll = () => header && header.classList.toggle("is-scrolled", window.scrollY > 24);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
+
+  /* ---------- Theme toggle ---------- */
+  const root = document.documentElement;
+  const THEME_KEY = "aims-theme";
+  const themeBtn = document.querySelector(".theme-toggle");
+  function applyTheme(t) {
+    root.setAttribute("data-theme", t);
+    if (themeBtn) {
+      themeBtn.setAttribute("aria-pressed", String(t === "dark"));
+      themeBtn.setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+      themeBtn.title = themeBtn.getAttribute("aria-label");
+    }
+  }
+  applyTheme(root.getAttribute("data-theme") === "dark" ? "dark" : "light");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(next);
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+  }
+  // Follow OS changes until the visitor picks a theme themselves
+  const mqDark = window.matchMedia("(prefers-color-scheme: dark)");
+  mqDark.addEventListener("change", (e) => {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
+    if (!saved) applyTheme(e.matches ? "dark" : "light");
+  });
 
   /* ---------- Mobile menu ---------- */
   const toggle = document.querySelector(".menu-toggle");
