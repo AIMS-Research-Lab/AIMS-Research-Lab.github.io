@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Publications · AIMS Research Lab</title>
+  <meta name="description" content="Papers, preprints and software from AIMS Research Lab.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="publications">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <canvas class="scene-canvas" data-scene="page" aria-hidden="true"></canvas>
+      <div class="box">
+        <span class="eyebrow">Publications</span>
+        <h1 class="page-title">Papers &amp; code</h1>
+        <p class="page-lead">Peer-reviewed articles, conference papers and preprints, with code and data released openly wherever we can.</p>
+      </div>
+    </section>
+
+    <!--
+      HOW TO EDIT
+      - Each paper is an <li class="row pub" data-type="journal|conference|preprint">.
+      - Wrap lab members' names in <strong> to highlight them.
+      - Group papers under a year: <h2 class="pub-year"> followed by its <ul class="rows">.
+    -->
+    <section class="section">
+      <div class="container">
+        <div class="filters reveal" data-filters role="group" aria-label="Filter publications">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter" type="button" data-filter="journal" aria-pressed="false">Journal</button>
+          <button class="filter" type="button" data-filter="conference" aria-pressed="false">Conference</button>
+          <button class="filter" type="button" data-filter="preprint" aria-pressed="false">Preprint</button>
+        </div>
+
+        <h2 class="pub-year reveal">2026</h2>
+        <ul class="rows reveal">
+          <li class="row pub" data-type="journal">
+            <span class="row-date">Journal</span>
+            <div>
+              <p class="row-title">[Publication title]</p>
+              <p class="authors"><strong>A. Author</strong>, B. Coauthor, <strong>F. Lastname</strong></p>
+              <p class="venue">[Journal name], vol. X, 2026</p>
+            </div>
+            <div class="links socials"><a href="#">PDF</a><a href="#">Code</a><a href="#">BibTeX</a></div>
+          </li>
+          <li class="row pub" data-type="preprint">
+            <span class="row-date">Preprint</span>
+            <div>
+              <p class="row-title">[Publication title]</p>
+              <p class="authors"><strong>A. Author</strong>, <strong>F. Lastname</strong></p>
+              <p class="venue">arXiv:XXXX.XXXXX, 2026</p>
+            </div>
+            <div class="links socials"><a href="#">arXiv</a><a href="#">Code</a></div>
+          </li>
+        </ul>
+
+        <h2 class="pub-year reveal">2025</h2>
+        <ul class="rows reveal">
+          <li class="row pub" data-type="conference">
+            <span class="row-date">Conference</span>
+            <div>
+              <p class="row-title">[Publication title]</p>
+              <p class="authors"><strong>A. Author</strong>, C. Collaborator, <strong>F. Lastname</strong></p>
+              <p class="venue">[Conference name], 2025</p>
+            </div>
+            <div class="links socials"><a href="#">PDF</a><a href="#">Poster</a></div>
+          </li>
+          <li class="row pub" data-type="journal">
+            <span class="row-date">Journal</span>
+            <div>
+              <p class="row-title">[Publication title]</p>
+              <p class="authors"><strong>F. Lastname</strong>, D. Collaborator</p>
+              <p class="venue">[Journal name], 2025</p>
+            </div>
+            <div class="links socials"><a href="#">PDF</a><a href="#">Data</a></div>
+          </li>
+        </ul>
+
+        <h2 class="pub-year reveal">2024</h2>
+        <ul class="rows reveal">
+          <li class="row pub" data-type="journal">
+            <span class="row-date">Journal</span>
+            <div>
+              <p class="row-title">[Publication title]</p>
+              <p class="authors"><strong>F. Lastname</strong>, E. Collaborator</p>
+              <p class="venue">[Journal name], 2024</p>
+            </div>
+            <div class="links socials"><a href="#">PDF</a></div>
+          </li>
+        </ul>
+
+        <p class="body-lg mt-l reveal">For a complete and up-to-date list, see our <a href="#">Google Scholar profile</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>

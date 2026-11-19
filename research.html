@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research · AIMS Research Lab</title>
+  <meta name="description" content="Research at AIMS: learning with physical laws, learning solution spaces, architected matter and intelligent design loops.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="research">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <canvas class="scene-canvas" data-scene="page" aria-hidden="true"></canvas>
+      <div class="box">
+        <span class="eyebrow">Research</span>
+        <h1 class="page-title">Intelligence<br>for the physical world</h1>
+        <p class="page-lead">We build learning systems that reason like scientists and engineers: grounded in principles, honest about uncertainty, and useful for designing real things.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split reveal">
+        <span class="eyebrow">Overview</span>
+        <p class="lede">Simulation has transformed engineering, but it is slow, and data alone is rarely enough. <span class="muted">Our work sits in between: models that combine the structure of physics with the flexibility of learning, and use both to explore designs no one has tried.</span></p>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+
+        <article class="theme reveal" id="laws">
+          <span class="theme-num">01 / 04</span>
+          <div>
+            <h2>Learning with the laws of nature</h2>
+            <p class="body-lg">Conventional networks learn only from examples. We train models on observations and on the equations that govern a system, so their predictions respect conservation, symmetry and boundary behaviour, even where measurements are sparse, noisy or missing entirely.</p>
+            <ul>
+              <li>How can known physics regularise learning in data-poor regimes?</li>
+              <li>How do we train such models robustly on stiff, multi-scale problems?</li>
+              <li>Can we recover hidden parameters and laws from partial observations?</li>
+            </ul>
+          </div>
+          <div class="theme-visual icon" data-icon="physics"></div>
+        </article>
+
+        <article class="theme reveal" id="solutions">
+          <span class="theme-num">02 / 04</span>
+          <div>
+            <h2>Learning entire solution spaces</h2>
+            <p class="body-lg">Instead of solving one problem at a time, we learn mappings between functions. Our models take a geometry, a load or an initial state and return the full physical response, independent of resolution and many orders of magnitude faster than traditional solvers.</p>
+            <ul>
+              <li>Architectures that generalise across shapes, meshes and boundary conditions</li>
+              <li>Reliable surrogates for real-time prediction and control</li>
+              <li>Quantifying when, and how much, a learned solver can be trusted</li>
+            </ul>
+          </div>
+          <div class="theme-visual icon" data-icon="operator"></div>
+        </article>
+
+        <article class="theme reveal" id="matter">
+          <span class="theme-num">03 / 04</span>
+          <div>
+            <h2>Architected matter</h2>
+            <p class="body-lg">Some of the most surprising materials owe their behaviour to geometry, not chemistry. These structures widen when stretched, absorb impact, or reconfigure on demand. We model, understand and engineer these lattices, and use learning to navigate their huge design spaces.</p>
+            <ul>
+              <li>Mechanics of lattice and cellular structures under large deformation</li>
+              <li>Data-driven discovery of geometries with target properties</li>
+              <li>Applications in protection, biomedical devices and lightweight structures</li>
+            </ul>
+          </div>
+          <div class="theme-visual icon" data-icon="lattice"></div>
+        </article>
+
+        <article class="theme reveal" id="discovery">
+          <span class="theme-num">04 / 04</span>
+          <div>
+            <h2>Intelligent design loops</h2>
+            <p class="body-lg">Prediction is only half the story. We connect simulation, learning and fabrication in closed loops for inverse design, uncertainty-aware optimisation and data-efficient experimentation, so that computation leads directly to things worth building and testing.</p>
+            <ul>
+              <li>Inverse design from desired behaviour back to structure</li>
+              <li>Combining high- and low-fidelity data efficiently</li>
+              <li>Open tools and benchmarks for scientific machine learning</li>
+            </ul>
+          </div>
+          <div class="theme-visual icon" data-icon="loop"></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="box cta reveal">
+          <div>
+            <span class="eyebrow">Collaborate</span>
+            <h2 class="mt-s">Have a problem<br>worth solving?</h2>
+          </div>
+          <div class="stack">
+            <p class="body-lg" style="color:var(--ink)">We partner with academic groups, industry and national labs on challenging problems in science and engineering.</p>
+            <div class="actions">
+              <a class="btn" href="contact.html">Start a conversation <span data-arrow></span></a>
+              <a class="btn btn--ghost" href="publications.html">See publications</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>People · AIMS Research Lab</title>
+  <meta name="description" content="Meet the researchers of AIMS Research Lab.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="people">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <canvas class="scene-canvas" data-scene="page" aria-hidden="true"></canvas>
+      <div class="box">
+        <span class="eyebrow">People</span>
+        <h1 class="page-title">The team</h1>
+        <p class="page-lead">Engineers, physicists and computer scientists who share a curiosity about how things work and how to make them better.</p>
+      </div>
+    </section>
+
+    <!--
+      HOW TO EDIT
+      - Photos: put square images in assets/img/people/ and add
+        <img src="assets/img/people/firstname-lastname.jpg" alt="Firstname Lastname">
+        inside the .avatar div (the initials stay underneath as a fallback).
+      - Copy a <article class="person"> block to add someone.
+    -->
+
+    <!-- Principal investigator -->
+    <section class="section">
+      <div class="container">
+        <article class="box pi reveal">
+          <div class="avatar" aria-hidden="true">FL</div>
+          <div class="stack" style="align-self:end">
+            <span class="eyebrow">Principal Investigator</span>
+            <h2>Dr. Firstname Lastname</h2>
+            <p class="body-lg">[Designation], [Department], [University Name]. [Short bio: education, previous positions, and the questions that drive the lab. Two or three sentences work best.]</p>
+            <div class="chips">
+              <span class="tag">Scientific ML</span>
+              <span class="tag">Computational mechanics</span>
+              <span class="tag">Materials design</span>
+            </div>
+            <div class="socials">
+              <a href="#" data-email>Email</a>
+              <a href="#">Scholar</a>
+              <a href="#">CV</a>
+              <a href="#">GitHub</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+
+        <div class="group">
+          <div class="section-head reveal"><h2 class="title">PhD researchers</h2></div>
+          <div class="people">
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">PhD · 2024–</span>
+              <h3>Firstname Lastname</h3>
+              <p>Physics-guided surrogate models for nonlinear solids.</p>
+              <div class="socials"><a href="#">Email</a><a href="#">Scholar</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">PhD · 2024–</span>
+              <h3>Firstname Lastname</h3>
+              <p>Learning solution maps for flows in complex geometries.</p>
+              <div class="socials"><a href="#">Email</a><a href="#">GitHub</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">PhD · 2025–</span>
+              <h3>Firstname Lastname</h3>
+              <p>Inverse design of lattice materials with tailored response.</p>
+              <div class="socials"><a href="#">Email</a><a href="#">LinkedIn</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">PhD · 2025–</span>
+              <h3>Firstname Lastname</h3>
+              <p>Uncertainty and trust in learned simulators.</p>
+              <div class="socials"><a href="#">Email</a></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="section-head reveal"><h2 class="title">Master's &amp; undergraduate</h2></div>
+          <div class="people">
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">M.Tech · 2025–</span>
+              <h3>Firstname Lastname</h3>
+              <p>Benchmarks for data-driven solvers.</p>
+              <div class="socials"><a href="#">Email</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">B.Tech · 2025–</span>
+              <h3>Firstname Lastname</h3>
+              <p>Simulation pipelines for cellular structures.</p>
+              <div class="socials"><a href="#">Email</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar" aria-hidden="true">FL</div>
+              <span class="role">Research intern · 2026</span>
+              <h3>Firstname Lastname</h3>
+              <p>Visualising learned physical fields.</p>
+              <div class="socials"><a href="#">Email</a></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="group alumni">
+          <div class="section-head reveal"><h2 class="title">Alumni</h2></div>
+          <ul class="rows reveal">
+            <li class="row"><span class="row-title">Firstname Lastname</span><span class="row-date">M.Tech 2025</span><span class="row-date">Now at [Company]</span></li>
+            <li class="row"><span class="row-title">Firstname Lastname</span><span class="row-date">B.Tech 2025</span><span class="row-date">PhD at [University]</span></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="box cta reveal">
+          <div>
+            <span class="eyebrow">Join the team</span>
+            <h2 class="mt-s">Your name<br>could be here.</h2>
+          </div>
+          <div class="actions"><a class="btn" href="join.html">See openings <span data-arrow></span></a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>

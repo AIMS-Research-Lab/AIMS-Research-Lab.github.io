@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIMS Research Lab</title>
+  <meta name="description" content="AIMS Research Lab builds machine intelligence that understands the physical world, to simulate, explain and design the materials and systems of tomorrow.">
+  <meta property="og:title" content="AIMS Research Lab">
+  <meta property="og:description" content="Machine intelligence for the physical world.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="home">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" aria-label="Introduction">
+      <canvas class="scene-canvas" data-scene="home" aria-hidden="true"></canvas>
+      <div class="hero-grid">
+        <div class="box hero-top">
+          <h1 class="hero-title">Welcome to<br><em>AIMS</em> Research Lab</h1>
+        </div>
+        <div class="box hero-side">
+          <span class="eyebrow">Currently</span>
+          <p class="rotator" data-rotate='["Teaching models the laws of nature","Learning whole families of solutions","Designing matter through geometry","Turning simulation into discovery"]'><span></span></p>
+        </div>
+        <div class="box hero-main">
+          <p class="hero-statement">We build machine intelligence that understands the physical world, to simulate, explain and design the materials and systems of tomorrow.</p>
+          <a class="scroll-cue" href="#about" aria-label="Scroll to content">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v12M3 9l5 5 5-5"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+      <div class="container split">
+        <div class="reveal"><span class="eyebrow">Who we are</span></div>
+        <div class="stack reveal">
+          <p class="lede">We work where machine learning meets mechanics, physics and materials. <span class="muted">Our models don't just fit data. They respect the principles that govern it, generalise beyond it, and help us create things that have never been built before.</span></p>
+          <p class="body-lg">Based at [University Name], AIMS brings together researchers from engineering, applied mathematics and computer science. We work on simulation, prediction and design, and we care about rigour, open science and real-world impact.</p>
+          <div><a class="arrow-link" href="research.html">Our research <span data-arrow></span></a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research themes -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="eyebrow">Research themes</span>
+            <h2 class="title">Four directions,<br>one ambition.</h2>
+          </div>
+          <a class="btn btn--ghost" href="research.html">Explore research <span data-arrow></span></a>
+        </div>
+
+        <div class="cards">
+          <a class="card reveal" href="research.html#laws">
+            <div class="card-top"><span class="card-num">01</span><span class="go" data-arrow></span></div>
+            <h3>Learning with the laws of nature</h3>
+            <p>Neural models trained on governing principles as well as observations, so they stay faithful where data is scarce.</p>
+            <span class="icon" data-icon="physics"></span>
+          </a>
+          <a class="card reveal" href="research.html#solutions">
+            <div class="card-top"><span class="card-num">02</span><span class="go" data-arrow></span></div>
+            <h3>Learning entire solution spaces</h3>
+            <p>Fast surrogates that map conditions to full physical responses, across geometries and resolutions.</p>
+            <span class="icon" data-icon="operator"></span>
+          </a>
+          <a class="card reveal" href="research.html#matter">
+            <div class="card-top"><span class="card-num">03</span><span class="go" data-arrow></span></div>
+            <h3>Architected matter</h3>
+            <p>Materials whose behaviour comes from geometry. They respond to force in ways ordinary solids cannot.</p>
+            <span class="icon" data-icon="lattice"></span>
+          </a>
+          <a class="card reveal" href="research.html#discovery">
+            <div class="card-top"><span class="card-num">04</span><span class="go" data-arrow></span></div>
+            <h3>Intelligent design loops</h3>
+            <p>Closing the gap between simulation, learning and fabrication, from prediction to inverse design.</p>
+            <span class="icon" data-icon="loop"></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Approach -->
+    <section class="section">
+      <div class="container">
+        <div class="split reveal" style="margin-bottom: clamp(32px, 5vw, 64px);">
+          <span class="eyebrow">Our approach</span>
+          <p class="lede">Principles first. Then data. Then design.</p>
+        </div>
+        <div class="steps">
+          <div class="step reveal">
+            <div class="step-num">01</div>
+            <h3>Start from physics</h3>
+            <p>We encode what is already known (conservation, symmetry, constitutive behaviour) directly into how models learn.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">02</div>
+            <h3>Learn what generalises</h3>
+            <p>We build models that transfer across scales, shapes and conditions, not ones that memorise a single scenario.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">03</div>
+            <h3>Design what's next</h3>
+            <p>Fast, reliable predictions let us search vast design spaces and propose structures worth building and testing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Latest news -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="eyebrow">Latest</span>
+            <h2 class="title">News</h2>
+          </div>
+          <a class="arrow-link" href="news.html">All news <span data-arrow></span></a>
+        </div>
+        <ul class="rows reveal">
+          <li><a class="row" href="news.html">
+            <span class="row-date">Nov 2026</span>
+            <div><p class="row-title">The AIMS Research Lab website is live</p></div>
+            <span data-arrow style="width:14px"></span>
+          </a></li>
+          <li><a class="row" href="news.html">
+            <span class="row-date">[Month Year]</span>
+            <div><p class="row-title">[Paper title] accepted at [Venue]</p></div>
+            <span data-arrow style="width:14px"></span>
+          </a></li>
+          <li><a class="row" href="news.html">
+            <span class="row-date">[Month Year]</span>
+            <div><p class="row-title">[Name] joins the lab as a PhD researcher</p></div>
+            <span data-arrow style="width:14px"></span>
+          </a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="box cta reveal">
+          <div>
+            <span class="eyebrow">Work with us</span>
+            <h2 class="mt-s">Curious minds,<br>hard problems.</h2>
+          </div>
+          <div class="stack">
+            <p class="body-lg" style="color:var(--ink)">We're looking for students, researchers and collaborators who want to push what learning can do for science and engineering.</p>
+            <div class="actions">
+              <a class="btn" href="join.html">Open positions <span data-arrow></span></a>
+              <a class="btn btn--ghost" href="contact.html">Get in touch</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>

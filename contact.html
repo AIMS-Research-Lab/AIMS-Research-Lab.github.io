@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact · AIMS Research Lab</title>
+  <meta name="description" content="Get in touch with AIMS Research Lab.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="contact">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <canvas class="scene-canvas" data-scene="page" aria-hidden="true"></canvas>
+      <div class="box">
+        <span class="eyebrow">Contact</span>
+        <h1 class="page-title">Say hello</h1>
+        <p class="page-lead">Questions about our research, collaboration ideas, or joining the lab? We'd love to hear from you.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-card reveal">
+            <span class="eyebrow">Email</span>
+            <a class="value" href="#" data-email></a>
+          </div>
+          <div class="contact-card reveal">
+            <span class="eyebrow">Address</span>
+            <p class="value">[Room / Building]<br>[Department Name]<br>[University Name], [City]</p>
+          </div>
+          <div class="contact-card reveal">
+            <span class="eyebrow">Elsewhere</span>
+            <div class="value socials" style="flex-wrap:wrap">
+              <a href="#">Google Scholar</a><a href="#">GitHub</a><a href="#">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="box cta reveal">
+          <div>
+            <span class="eyebrow">Prospective students</span>
+            <h2 class="mt-s">Thinking of<br>applying?</h2>
+          </div>
+          <div class="stack">
+            <p class="body-lg" style="color:var(--ink)">Read about open positions and what to include before you write. It helps us get back to you faster.</p>
+            <div class="actions"><a class="btn" href="join.html">Join us <span data-arrow></span></a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>

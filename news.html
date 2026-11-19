@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>News · AIMS Research Lab</title>
+  <meta name="description" content="Updates, papers, awards and events from AIMS Research Lab.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="news">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <canvas class="scene-canvas" data-scene="page" aria-hidden="true"></canvas>
+      <div class="box">
+        <span class="eyebrow">News</span>
+        <h1 class="page-title">What's new</h1>
+        <p class="page-lead">Papers, talks, awards and arrivals: a running log of life in the lab.</p>
+      </div>
+    </section>
+
+    <!-- HOW TO EDIT: newest first. Copy an <li class="row"> block; use a <span class="tag"> for the category. -->
+    <section class="section">
+      <div class="container">
+        <ul class="rows reveal">
+          <li class="row">
+            <span class="row-date">Nov 2026</span>
+            <div>
+              <p class="row-title">The AIMS Research Lab website is live</p>
+              <p class="row-text">Our new home on the web, with our research, people, publications and openings in one place.</p>
+            </div>
+            <span class="tag">Lab</span>
+          </li>
+          <li class="row">
+            <span class="row-date">[Month Year]</span>
+            <div>
+              <p class="row-title">[Paper title] accepted at [Venue]</p>
+              <p class="row-text">[One or two sentences on the contribution and who led it.]</p>
+            </div>
+            <span class="tag">Paper</span>
+          </li>
+          <li class="row">
+            <span class="row-date">[Month Year]</span>
+            <div>
+              <p class="row-title">[Name] presents at [Conference / Workshop]</p>
+              <p class="row-text">[Talk title and a link to slides or recording.]</p>
+            </div>
+            <span class="tag">Talk</span>
+          </li>
+          <li class="row">
+            <span class="row-date">[Month Year]</span>
+            <div>
+              <p class="row-title">[Name] receives [Award / Fellowship]</p>
+              <p class="row-text">[What it recognises.]</p>
+            </div>
+            <span class="tag">Award</span>
+          </li>
+          <li class="row">
+            <span class="row-date">[Month Year]</span>
+            <div>
+              <p class="row-title">New members join the lab</p>
+              <p class="row-text">[Welcome note for the incoming cohort.]</p>
+            </div>
+            <span class="tag">People</span>
+          </li>
+          <li class="row">
+            <span class="row-date">[Month Year]</span>
+            <div>
+              <p class="row-title">New grant from [Funding Agency]</p>
+              <p class="row-text">[Project title and what it will enable.]</p>
+            </div>
+            <span class="tag">Funding</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>
