@@ -24,6 +24,7 @@
     { key: "people", label: "People", href: "people.html" },
     { key: "publications", label: "Publications", href: "publications.html" },
     { key: "news", label: "News", href: "news.html" },
+    { key: "off-the-grid", label: "Off the Grid", href: "off-the-grid.html" },
     { key: "join", label: "Join Us", href: "join.html" },
     { key: "contact", label: "Contact", href: "contact.html" },
   ];
@@ -65,6 +66,10 @@
         }
       return `<svg viewBox="0 0 100 100" ${S}>${p}</svg>`;
     })(),
+    // Camera (photo placeholder)
+    camera:
+      `<svg viewBox="0 0 100 100" ${S}><path d="M14 32h16l6-9h28l6 9h16v45H14Z"/>` +
+      `<circle cx="50" cy="54" r="15"/><circle cx="50" cy="54" r="6" stroke-opacity=".5"/><path d="M76 40h4"/></svg>`,
     // Closed design loop
     loop:
       `<svg viewBox="0 0 100 100" ${S}><circle cx="50" cy="50" r="32" stroke-dasharray="3 5"/>` +
@@ -219,7 +224,7 @@
     }, 2800);
   });
 
-  /* ---------- Publication filters ---------- */
+  /* ---------- Filters (publications, Off the Grid) ---------- */
   const filterBar = document.querySelector("[data-filters]");
   if (filterBar) {
     const items = document.querySelectorAll("[data-type]");
@@ -236,6 +241,55 @@
         y.hidden = list && !list.querySelector("[data-type]:not([hidden])");
         if (list) list.hidden = y.hidden;
       });
+    });
+  }
+
+  /* ---------- Off the Grid: photo viewer ---------- */
+  const gallery = document.querySelector("[data-gallery]");
+  if (gallery && window.HTMLDialogElement) {
+    const box = document.createElement("dialog");
+    box.className = "lightbox";
+    box.setAttribute("aria-label", "Photo viewer");
+    box.innerHTML = `
+      <div class="lightbox-media"></div>
+      <div class="lightbox-bar">
+        <div><p class="lightbox-title"></p><p class="lightbox-meta"></p></div>
+        <div class="lightbox-nav">
+          <span class="lightbox-count"></span>
+          <button type="button" data-step="-1" aria-label="Previous photo">←</button>
+          <button type="button" data-step="1" aria-label="Next photo">→</button>
+          <button type="button" data-close aria-label="Close viewer">✕</button>
+        </div>
+      </div>`;
+    document.body.appendChild(box);
+    const media = box.querySelector(".lightbox-media");
+    let list = [], idx = 0;
+
+    function show(i) {
+      idx = (i + list.length) % list.length;
+      const fig = list[idx];
+      const src = fig.querySelector(".moment-media");
+      media.innerHTML = src.innerHTML;
+      media.classList.toggle("is-placeholder", !src.querySelector("img"));
+      box.querySelector(".lightbox-title").textContent = fig.querySelector(".moment-title").textContent;
+      box.querySelector(".lightbox-meta").textContent = fig.querySelector(".moment-meta").textContent;
+      box.querySelector(".lightbox-count").textContent = `${idx + 1} / ${list.length}`;
+    }
+    gallery.addEventListener("click", (e) => {
+      const btn = e.target.closest(".moment-media");
+      if (!btn) return;
+      list = [...gallery.querySelectorAll(".moment:not([hidden])")];
+      show(list.indexOf(btn.closest(".moment")));
+      box.showModal();
+    });
+    box.addEventListener("click", (e) => {
+      if (e.target === box || e.target.closest("[data-close]")) box.close();
+      const step = e.target.closest("[data-step]");
+      if (step) show(idx + Number(step.dataset.step));
+    });
+    box.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") show(idx + 1);
+      if (e.key === "ArrowLeft") show(idx - 1);
     });
   }
 })();

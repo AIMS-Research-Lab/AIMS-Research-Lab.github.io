@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Off the Grid · AIMS Research Lab</title>
+  <meta name="description" content="Moments from life at AIMS Research Lab: retreats, conferences, celebrations and everyday lab life.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="assets/js/theme.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="assets/js/scene.js"></script>
+</head>
+<body data-page="off-the-grid">
+  <div data-include="header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <canvas class="scene-canvas" data-scene="page" aria-hidden="true"></canvas>
+      <div class="box">
+        <span class="eyebrow">Off the Grid</span>
+        <h1 class="page-title">Moments beyond<br>the equations</h1>
+        <p class="page-lead">Great research is built by people. Here they are away from the screens: at conferences and on trips, celebrating milestones, and on the ordinary days in between.</p>
+      </div>
+    </section>
+
+    <!--
+      HOW TO ADD A PHOTO
+      1. Put the image in assets/img/moments/ (JPG/WebP, ~1600px on the long side keeps it fast).
+      2. Copy a <figure class="moment"> block below. Inside .moment-media, replace the
+         <span class="icon" data-icon="camera"></span> placeholder with:
+           <img src="assets/img/moments/retreat-2026.jpg" alt="Short description" loading="lazy">
+         and remove the inline aspect-ratio style (the photo's own shape is used).
+      3. Set data-type to one of: events | conferences | outings | everyday
+      4. Edit the title and the date/place in the figcaption.
+    -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="filters reveal" data-filters role="group" aria-label="Filter moments">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter" type="button" data-filter="events" aria-pressed="false">Milestones</button>
+          <button class="filter" type="button" data-filter="conferences" aria-pressed="false">Conferences</button>
+          <button class="filter" type="button" data-filter="outings" aria-pressed="false">Outings</button>
+          <button class="filter" type="button" data-filter="everyday" aria-pressed="false">Everyday</button>
+        </div>
+
+        <div class="moments" data-gallery>
+          <figure class="moment reveal" data-type="events">
+            <button class="moment-media" type="button" style="aspect-ratio:4 / 5" aria-label="View: [Annual lab retreat]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Annual lab retreat]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="everyday">
+            <button class="moment-media" type="button" style="aspect-ratio:4 / 3" aria-label="View: [Whiteboard session]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Whiteboard session]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="conferences">
+            <button class="moment-media" type="button" style="aspect-ratio:1 / 1" aria-label="View: [Poster at Conference]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Poster at Conference]</span><span class="moment-meta">[City]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="outings">
+            <button class="moment-media" type="button" style="aspect-ratio:3 / 4" aria-label="View: [Hike to the hills]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Hike to the hills]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="events">
+            <button class="moment-media" type="button" style="aspect-ratio:4 / 3" aria-label="View: [Thesis defence celebration]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Thesis defence celebration]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="everyday">
+            <button class="moment-media" type="button" style="aspect-ratio:3 / 4" aria-label="View: [Late night in the lab]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Late night in the lab]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="outings">
+            <button class="moment-media" type="button" style="aspect-ratio:16 / 10" aria-label="View: [Team dinner]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Team dinner]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="conferences">
+            <button class="moment-media" type="button" style="aspect-ratio:4 / 5" aria-label="View: [Invited talk]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Invited talk]</span><span class="moment-meta">[City]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="everyday">
+            <button class="moment-media" type="button" style="aspect-ratio:1 / 1" aria-label="View: [First prototype off the printer]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[First prototype off the printer]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="events">
+            <button class="moment-media" type="button" style="aspect-ratio:3 / 4" aria-label="View: [Welcoming new members]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Welcoming new members]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="outings">
+            <button class="moment-media" type="button" style="aspect-ratio:4 / 3" aria-label="View: [Weekend trip]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Weekend trip]</span><span class="moment-meta">[Mon YYYY]</span></figcaption>
+          </figure>
+          <figure class="moment reveal" data-type="conferences">
+            <button class="moment-media" type="button" style="aspect-ratio:3 / 2" aria-label="View: [Workshop group photo]">
+              <span class="icon" data-icon="camera"></span>
+              <span class="view">View</span>
+            </button>
+            <figcaption><span class="moment-title">[Workshop group photo]</span><span class="moment-meta">[City]</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="box cta reveal">
+          <div>
+            <span class="eyebrow">Got a great shot?</span>
+            <h2 class="mt-s">Share your<br>moment.</h2>
+          </div>
+          <div class="stack">
+            <p class="body-lg" style="color:var(--ink)">Lab members: send your favourite photos, with a line about where and when, and we'll add them here.</p>
+            <div class="actions"><a class="btn" href="#" data-email>Send photos <span data-arrow></span></a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-include="footer"></div>
+</body>
+</html>
