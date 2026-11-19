@@ -29,7 +29,7 @@ The static website for AIMS Research Lab, hosted on GitHub Pages. It has no buil
 - **Off the Grid photos:** add images to `assets/img/moments/` and follow the `HOW TO ADD A PHOTO` comment in `off-the-grid.html`.
 - **Content:** edit the HTML pages directly. Placeholders are written in `[square brackets]`, and each page has a `HOW TO EDIT` comment.
 - **Background animations:** each page picks one with `data-anim` on its `<canvas>`:
-  `auxetic` (Home), `waves` (Research), `network` (People), `layers` (Publications),
+  `auxetic` (Home), `waves` (Research), `orbits` (People), `layers` (Publications),
   `stream` (News), `flock` (Off the Grid), `modes` (Join Us), `ripple` (Contact).
   Swap the names to reassign, or add a new builder to `BUILDERS` in `assets/js/scene.js`.
 - **Colours and fonts:** the CSS variables in `:root` (light) and `:root[data-theme="dark"]` (dark) at the top of `assets/css/style.css`.
@@ -47,3 +47,12 @@ python3 -m http.server 8000
 ## Deploy
 
 Push to `main`, then in **Settings → Pages** set the source to `main` / root.
+
+## Cache-busting
+
+Every page loads the shared CSS/JS with a version tag, e.g. `assets/js/main.js?v=2026111901`.
+After changing any file in `assets/`, bump the number on all pages so visitors get the new version straight away:
+
+```bash
+sed -i '' -E 's/\?v=[0-9]+/?v=NEW_NUMBER/g' *.html   # macOS
+```
