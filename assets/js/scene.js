@@ -1,26 +1,383 @@
 /* =========================================================
-   AIMS Research Lab — hero scene (Three.js)
-   A sheet of cubes arranged as a "rotating squares" lattice:
-   neighbouring cubes counter-rotate, so the whole sheet grows
-   in both directions at once (negative Poisson's ratio).
-   Floating cubes drift around it.
-   Usage: <canvas class="scene-canvas" data-scene="home|page">
+   AIMS Research Lab: background scenes (Three.js)
+   ---------------------------------------------------------
+   Every page gets its own cube-built animation inspired by
+   AI for Science & Engineering. Choose one per page with:
+
+     <canvas class="scene-canvas" data-scene="home|page" data-anim="NAME">
+
+   NAME                 idea
+   auxetic  (default)   rotating-squares lattice that grows in both directions
+   waves                interference of two sources: a PDE solution field
+   network              graph with message-passing pulses between nodes
+   layers               neural-network layers with a signal flowing through
+   stream               3D waterfall of a live signal: new data keeps arriving
+   flock                agent-based swarm (separation, alignment, cohesion)
+   modes                Fourier modes that add up to one signal
+   ripple               concentric wavefronts spreading from a source
+
+   data-scene sets placement: "home" = large, hero; "page" = to the right.
    ========================================================= */
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-const canvas = document.querySelector("canvas[data-scene]");
-if (canvas) init(canvas);
+/* ---------- helpers ---------- */
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp01 = (t) => Math.min(1, Math.max(0, t));
+const ease = (t) => 1 - Math.pow(1 - clamp01(t), 3);
 
+const PALETTE = [new THREE.Color("#b2f0cb"), new THREE.Color("#5fd6dc"), new THREE.Color("#3a8fe2")];
+function gradient(t, out = new THREE.Color()) {
+  t = clamp01(t);
+  return t < 0.5 ? out.copy(PALETTE[0]).lerp(PALETTE[1], t * 2) : out.copy(PALETTE[1]).lerp(PALETTE[2], (t - 0.5) * 2);
+}
+
+function makeCubes(ctx, n) {
+  const mesh = new THREE.InstancedMesh(ctx.geo, ctx.solid, n);
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const c = new THREE.Color();
+  for (let k = 0; k < n; k++) mesh.setColorAt(k, c.set(0xffffff));
+  return mesh;
+}
+
+/** write one instance transform */
+function put(ctx, mesh, k, x, y, z, rx, ry, rz, sx, sy = sx, sz = sx) {
+  const d = ctx.dummy;
+  d.position.set(x, y, z);
+  d.rotation.set(rx, ry, rz);
+  d.scale.set(sx, sy, sz);
+  d.updateMatrix();
+  mesh.setMatrixAt(k, d.matrix);
+}
+
+function lines(ctx, positions) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  return new THREE.LineSegments(g, ctx.lineMat);
+}
+
+/* =========================================================
+   Scene builders: each returns { object, update(time, dt) }
+   Objects are ~9 units across, centred on the origin.
+   ========================================================= */
+const BUILDERS = {
+  /* Rotating squares: neighbours counter-rotate, sheet expands in x AND y */
+  auxetic(ctx) {
+    const N = ctx.mode === "home" ? 9 : 7;
+    const mesh = makeCubes(ctx, N * N);
+    const cells = [];
+    const col = new THREE.Color();
+    for (let i = 0; i < N; i++)
+      for (let j = 0; j < N; j++) {
+        cells.push({
+          i: i - (N - 1) / 2, j: j - (N - 1) / 2, s: (i + j) % 2 ? 1 : -1,
+          from: new THREE.Vector3(rand(-18, 18), rand(-14, 14), rand(-14, 6)),
+          fromRot: new THREE.Euler(rand(0, 6), rand(0, 6), rand(0, 6)),
+          delay: (i + j) / (2 * N) + rand(0, 0.4),
+        });
+        mesh.setColorAt(cells.length - 1, gradient((i + (N - 1 - j)) / (2 * (N - 1)) + rand(-0.08, 0.08), col));
+      }
+    const g = new THREE.Group();
+    g.add(mesh);
+    g.rotation.set(-0.55, 0.5, 0.62);
+    const P = new THREE.Vector3();
+    return {
+      object: g,
+      update(t) {
+        const theta = ctx.reduced ? 0.38 : 0.32 + 0.27 * Math.sin(t * 0.5 - 1.2);
+        const d = Math.cos(theta) + Math.sin(theta);
+        cells.forEach((c, k) => {
+          const p = ctx.reduced ? 1 : ease((t - 0.2 - c.delay) / 1.8);
+          P.set(c.i * d, c.j * d, Math.sin(t * 0.8 + c.i * 0.45 + c.j * 0.3) * 0.18).lerp(c.from, 1 - p);
+          put(ctx, mesh, k, P.x, P.y, P.z, c.fromRot.x * (1 - p), c.fromRot.y * (1 - p), c.s * theta * p + c.fromRot.z * (1 - p), 0.95);
+        });
+        mesh.instanceMatrix.needsUpdate = true;
+        g.rotation.y = 0.5 + Math.sin(t * 0.12) * 0.3;
+      },
+    };
+  },
+
+  /* Two point sources interfering: a living solution of the wave equation */
+  waves(ctx) {
+    const G = 17, sp = 0.52, n = G * G;
+    const mesh = makeCubes(ctx, n);
+    const g = new THREE.Group();
+    g.add(mesh);
+    g.rotation.set(-1.0, 0, 0.55);
+    const src = [[-2.1, -1.6], [2.2, 1.9]];
+    const col = new THREE.Color();
+    return {
+      object: g,
+      update(t) {
+        let k = 0;
+        for (let i = 0; i < G; i++)
+          for (let j = 0; j < G; j++, k++) {
+            const x = (i - (G - 1) / 2) * sp, y = (j - (G - 1) / 2) * sp;
+            let h = 0;
+            for (const [sx, sy] of src) {
+              const r = Math.hypot(x - sx, y - sy);
+              h += Math.sin(2.3 * r - 2.0 * t) / (1 + 0.3 * r);
+            }
+            put(ctx, mesh, k, x, y, h * 0.75, 0, 0, 0, 0.4, 0.4, 0.4 + Math.abs(h) * 0.35);
+            mesh.setColorAt(k, gradient(0.5 + h * 0.38, col));
+          }
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        g.rotation.z = 0.55 + t * 0.04;
+      },
+    };
+  },
+
+  /* Graph with message passing: a pulse hops outward from a source node */
+  network(ctx) {
+    const n = 38, R = 4.2;
+    const pos = [], size = [], base = [];
+    for (let k = 0; k < n; k++) {
+      const yv = 1 - (2 * (k + 0.5)) / n, r = Math.sqrt(1 - yv * yv), phi = k * 2.39996;
+      const j = rand(0.75, 1.1);
+      pos.push(new THREE.Vector3(Math.cos(phi) * r * R * j, yv * R * j, Math.sin(phi) * r * R * j));
+      size.push(rand(0.32, 0.7));
+      base.push(gradient(Math.random()));
+    }
+    // connect each node to its 3 nearest neighbours
+    const adj = Array.from({ length: n }, () => new Set());
+    for (let a = 0; a < n; a++) {
+      pos.map((p, b) => [b, p.distanceTo(pos[a])]).filter(([b]) => b !== a)
+        .sort((u, v) => u[1] - v[1]).slice(0, 3)
+        .forEach(([b]) => { adj[a].add(b); adj[b].add(a); });
+    }
+    const seg = [];
+    adj.forEach((s, a) => s.forEach((b) => { if (a < b) seg.push(...pos[a].toArray(), ...pos[b].toArray()); }));
+    // hop distance from every node (BFS)
+    const hops = pos.map((_, s) => {
+      const d = new Array(n).fill(99); d[s] = 0;
+      const q = [s];
+      while (q.length) { const a = q.shift(); adj[a].forEach((b) => { if (d[b] > d[a] + 1) { d[b] = d[a] + 1; q.push(b); } }); }
+      return d;
+    });
+    const mesh = makeCubes(ctx, n);
+    const g = new THREE.Group();
+    g.add(mesh, lines(ctx, seg));
+    const col = new THREE.Color(), T = 5.5;
+    return {
+      object: g,
+      update(t) {
+        const cycle = Math.floor(t / T), src = (cycle * 11 + 3) % n, front = (t % T) * 1.5;
+        for (let k = 0; k < n; k++) {
+          const a = ctx.reduced ? 0 : Math.exp(-Math.pow(front - hops[src][k], 2) * 2.2);
+          const p = pos[k];
+          put(ctx, mesh, k, p.x, p.y, p.z, t * 0.2 + k, t * 0.15 + k * 2, 0, size[k] * (1 + 0.45 * a));
+          mesh.setColorAt(k, col.copy(base[k]).lerp(ctx.accent, a * 0.85));
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        g.rotation.set(0.25, t * 0.08, 0.1);
+      },
+    };
+  },
+
+  /* Neural network: layers of units, an activation wave flows left to right */
+  layers(ctx) {
+    const sizes = [3, 4, 4, 3, 2], gapX = 2.1, gapU = 0.78, L = sizes.length;
+    const units = [];
+    sizes.forEach((s, l) => {
+      for (let a = 0; a < s; a++)
+        for (let b = 0; b < s; b++)
+          units.push({ l, p: new THREE.Vector3((l - (L - 1) / 2) * gapX, (a - (s - 1) / 2) * gapU, (b - (s - 1) / 2) * gapU), w: rand(0.35, 1), base: gradient(l / (L - 1) + rand(-0.1, 0.1)) });
+    });
+    const seg = [];
+    units.forEach((u) => units.forEach((v) => { if (v.l === u.l + 1) seg.push(...u.p.toArray(), ...v.p.toArray()); }));
+    const mesh = makeCubes(ctx, units.length);
+    const g = new THREE.Group();
+    g.add(mesh, lines(ctx, seg));
+    const col = new THREE.Color();
+    return {
+      object: g,
+      update(t) {
+        const phase = ((t * 0.9) % (L + 2)) - 1;
+        units.forEach((u, k) => {
+          const a = ctx.reduced ? 0 : Math.exp(-Math.pow(phase - u.l, 2) * 1.8) * u.w;
+          put(ctx, mesh, k, u.p.x, u.p.y, u.p.z, 0, 0, 0, 0.46 * (1 + 0.35 * a));
+          mesh.setColorAt(k, col.copy(u.base).lerp(ctx.accent, a * 0.9));
+        });
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        g.rotation.set(0.28, -0.65 + Math.sin(t * 0.2) * 0.25, 0.06);
+      },
+    };
+  },
+
+  /* Streaming data: a 3D waterfall where every new row is a fresh slice of a live signal */
+  stream(ctx) {
+    const R = 15, C = 22, dx = 0.38, dz = 0.58, speed = 1.3;
+    const mesh = makeCubes(ctx, R * C);
+    const g = new THREE.Group();
+    g.add(mesh);
+    const col = new THREE.Color();
+    // smooth, evolving "spectrum": two drifting peaks plus a ripple
+    const signal = (x, T) => {
+      const c1 = 2.4 * Math.sin(T * 0.21), c2 = -2.2 * Math.cos(T * 0.15 + 1.3);
+      const a1 = 1.1 + 0.5 * Math.sin(T * 0.37), a2 = 0.8 + 0.4 * Math.cos(T * 0.29);
+      return 0.12 + a1 * Math.exp(-((x - c1) ** 2) / 1.1) + a2 * Math.exp(-((x - c2) ** 2) / 0.7) + 0.12 * (1 + Math.sin(x * 2.1 + T * 0.8));
+    };
+    return {
+      object: g,
+      update(t) {
+        const tt = ctx.reduced ? 4 : t;
+        for (let r = 0; r < R; r++) {
+          const u = (r + tt * speed) % R;      // 0 = newest (back), R = oldest (front)
+          const T = tt * speed - u;            // constant while a row travels: its "timestamp"
+          const fade = Math.sin(Math.PI * (u / R));
+          for (let c = 0; c < C; c++) {
+            const x = (c - (C - 1) / 2) * dx;
+            const h = signal(x, T) * 1.6 * (0.35 + 0.65 * fade);
+            const k = r * C + c;
+            put(ctx, mesh, k, x, h / 2, (u - R / 2) * dz, 0, 0, 0, 0.3 * (0.4 + 0.6 * fade), h, 0.3 * (0.4 + 0.6 * fade));
+            mesh.setColorAt(k, gradient(h / 2.6, col));
+          }
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        g.rotation.set(0.5, -0.65 + Math.sin(t * 0.1) * 0.15, 0);
+        g.position.y = -1.2;
+      },
+    };
+  },
+
+  /* Flocking: separation, alignment and cohesion produce collective motion */
+  flock(ctx) {
+    const N = 150, bound = 4.6;
+    const forward = new THREE.Vector3(0, 0, 1);
+    const boids = Array.from({ length: N }, () => ({
+      p: new THREE.Vector3(rand(-3, 3), rand(-2.5, 2.5), rand(-2.5, 2.5)),
+      v: new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).setLength(rand(1.2, 2)),
+      base: gradient(Math.random()),
+    }));
+    const mesh = makeCubes(ctx, N);
+    const g = new THREE.Group();
+    g.add(mesh);
+    const sep = new THREE.Vector3(), ali = new THREE.Vector3(), coh = new THREE.Vector3(), tmp = new THREE.Vector3(), goal = new THREE.Vector3();
+    const col = new THREE.Color(), dir = new THREE.Vector3(), d = ctx.dummy;
+    return {
+      object: g,
+      update(t, dt) {
+        const h = ctx.reduced ? 0 : Math.min(dt, 0.05);
+        goal.set(Math.sin(t * 0.31) * 2.6, Math.sin(t * 0.47) * 1.6, Math.cos(t * 0.23) * 2.2); // wandering target
+        if (h) {
+          for (let i = 0; i < N; i++) {
+            const b = boids[i];
+            sep.set(0, 0, 0); ali.set(0, 0, 0); coh.set(0, 0, 0);
+            let n = 0;
+            for (let j = 0; j < N; j++) {
+              if (i === j) continue;
+              const o = boids[j];
+              const dist = b.p.distanceTo(o.p);
+              if (dist < 2.0) {
+                ali.add(o.v); coh.add(o.p); n++;
+                if (dist < 0.75) sep.add(tmp.subVectors(b.p, o.p).divideScalar(dist * dist + 0.01));
+              }
+            }
+            if (n) {
+              ali.divideScalar(n).sub(b.v).multiplyScalar(0.9);
+              coh.divideScalar(n).sub(b.p).multiplyScalar(0.7);
+            }
+            b.v.addScaledVector(sep, 1.6 * h).addScaledVector(ali, h).addScaledVector(coh, h)
+              .addScaledVector(tmp.subVectors(goal, b.p), 0.35 * h);
+            if (b.p.length() > bound) b.v.addScaledVector(b.p, -0.8 * h); // soft boundary
+            const sp = b.v.length();
+            b.v.setLength(Math.min(2.8, Math.max(1.1, sp)));
+          }
+          boids.forEach((b) => b.p.addScaledVector(b.v, h));
+        }
+        boids.forEach((b, k) => {
+          d.position.copy(b.p);
+          d.quaternion.setFromUnitVectors(forward, dir.copy(b.v).normalize());
+          d.scale.set(0.2, 0.2, 0.55);
+          d.updateMatrix();
+          mesh.setMatrixAt(k, d.matrix);
+          const speed = clamp01((b.v.length() - 1.1) / 1.7);
+          mesh.setColorAt(k, col.copy(b.base).lerp(ctx.accent, speed * 0.5));
+        });
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        g.rotation.set(0.15, t * 0.03, 0);
+      },
+    };
+  },
+
+  /* Fourier modes (back rows) superpose into one signal (front row) */
+  modes(ctx) {
+    const K = [1, 2, 3, 5], A = [1, 0.55, 0.4, 0.28], cols = 26, dx = 0.34, rows = K.length + 1, dz = 1.15;
+    const mesh = makeCubes(ctx, cols * rows);
+    const g = new THREE.Group();
+    g.add(mesh);
+    const col = new THREE.Color();
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++) mesh.setColorAt(r * cols + c, r === K.length ? col.copy(ctx.accent) : gradient(r / (rows - 1) * 0.8 + c / cols * 0.2, col));
+    return {
+      object: g,
+      update(t) {
+        for (let r = 0; r < rows; r++)
+          for (let c = 0; c < cols; c++) {
+            const x = (c - (cols - 1) / 2) * dx;
+            let y = 0;
+            if (r < K.length) y = A[r] * Math.sin(K[r] * x * 0.72 - 1.2 * t + r);
+            else for (let m = 0; m < K.length; m++) y += A[m] * Math.sin(K[m] * x * 0.72 - 1.2 * t + m);
+            const front = r === K.length;
+            put(ctx, mesh, r * cols + c, x, y * (front ? 0.9 : 1.1), (r - (rows - 1) / 2) * dz, 0, 0, Math.atan(y) * 0.3, front ? 0.3 : 0.24);
+          }
+        mesh.instanceMatrix.needsUpdate = true;
+        g.rotation.set(0.4, -0.75 + Math.sin(t * 0.18) * 0.2, 0);
+      },
+      onTheme() {
+        for (let c = 0; c < cols; c++) mesh.setColorAt(K.length * cols + c, ctx.accent);
+        mesh.instanceColor.needsUpdate = true;
+      },
+    };
+  },
+
+  /* Concentric wavefronts spreading out from a source */
+  ripple(ctx) {
+    const R = 7, per = 40, sp = 0.72, maxR = R * sp;
+    const mesh = makeCubes(ctx, R * per);
+    const g = new THREE.Group();
+    g.add(mesh);
+    g.rotation.set(-1.0, 0, 0.3);
+    const col = new THREE.Color();
+    return {
+      object: g,
+      update(t) {
+        for (let i = 0; i < R; i++) {
+          const rr = (((i + t * 0.45) % R) * sp) + 0.35;
+          const fade = Math.sin(Math.PI * clamp01(rr / (maxR + 0.35)));
+          const s = Math.min(0.36, (rr * 2 * Math.PI / per) * 0.55) * (0.25 + 0.75 * fade);
+          for (let j = 0; j < per; j++) {
+            const a = (j / per) * Math.PI * 2 + i * 0.4;
+            put(ctx, mesh, i * per + j, Math.cos(a) * rr, Math.sin(a) * rr, Math.sin(rr * 1.4 - t * 2) * 0.3, 0, 0, a, s);
+            mesh.setColorAt(i * per + j, gradient(rr / maxR, col));
+          }
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.instanceColor.needsUpdate = true;
+        g.rotation.z = 0.3 + t * 0.06;
+      },
+    };
+  },
+};
+
+/* =========================================================
+   Core: renderer, lights, theme, floating cubes, interaction
+   ========================================================= */
 function init(canvas) {
   const host = canvas.parentElement;
   const mode = canvas.dataset.scene === "home" ? "home" : "page";
+  const anim = BUILDERS[canvas.dataset.anim] ? canvas.dataset.anim : "auxetic";
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
   } catch (e) {
-    return; // no WebGL — the gradient background still looks fine
+    return; // no WebGL: the gradient background still looks fine
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -30,19 +387,27 @@ function init(canvas) {
   camera.position.set(0, 0, 26);
 
   const hemi = new THREE.HemisphereLight(0xf4fffc, 0x2f86de, 1.5);
-  scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, 2.0);
   key.position.set(6, 10, 12);
-  scene.add(key);
   const rim = new THREE.DirectionalLight(0x8ff0d4, 1.2);
   rim.position.set(-10, -6, 4);
-  scene.add(rim);
+  scene.add(hemi, key, rim);
 
-  // Light / dark palettes for fog and lighting (cube colours stay the same)
-  const THEMES = {
-    light: { fog: 0xe6f8f6, sky: 0xf4fffc, ground: 0x2f86de, hemi: 1.5, key: 2.0, rim: 1.2 },
-    dark: { fog: 0x071416, sky: 0xbff6ea, ground: 0x0b2e4a, hemi: 1.05, key: 1.6, rim: 1.6 },
+  const ctx = {
+    mode, reduced,
+    geo: new THREE.BoxGeometry(1, 1, 1),
+    solid: new THREE.MeshStandardMaterial({ roughness: 0.3, metalness: 0.05 }),
+    lineMat: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.2, depthWrite: false }),
+    accent: new THREE.Color(),
+    dummy: new THREE.Object3D(),
   };
+
+  /* ---- theme ---- */
+  const THEMES = {
+    light: { fog: 0xe6f8f6, sky: 0xf4fffc, ground: 0x2f86de, hemi: 1.5, key: 2.0, rim: 1.2, line: 0x0d1b1e, lineOp: 0.16, accent: 0x2a6fd6 },
+    dark: { fog: 0x071416, sky: 0xbff6ea, ground: 0x0b2e4a, hemi: 1.05, key: 1.6, rim: 1.6, line: 0xcfeee8, lineOp: 0.2, accent: 0xd9fff1 },
+  };
+  let built;
   function applyTheme() {
     const t = THEMES[document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"];
     scene.fog.color.setHex(t.fog);
@@ -51,47 +416,23 @@ function init(canvas) {
     hemi.intensity = t.hemi;
     key.intensity = t.key;
     rim.intensity = t.rim;
+    ctx.lineMat.color.setHex(t.line);
+    ctx.lineMat.opacity = t.lineOp;
+    ctx.accent.setHex(t.accent);
+    if (built && built.onTheme) built.onTheme();
   }
   applyTheme();
 
-  const geo = new THREE.BoxGeometry(1, 1, 1);
-  const solid = new THREE.MeshStandardMaterial({ roughness: 0.3, metalness: 0.05 });
-  const glass = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.78 });
+  /* ---- page animation ---- */
+  built = BUILDERS[anim](ctx);
+  const holder = new THREE.Group();
+  holder.add(built.object);
+  scene.add(holder);
 
-  const C = [new THREE.Color("#b2f0cb"), new THREE.Color("#5fd6dc"), new THREE.Color("#3a8fe2")];
-  const tmpColor = new THREE.Color();
-  function gradient(t) {
-    t = Math.min(1, Math.max(0, t));
-    return t < 0.5 ? tmpColor.copy(C[0]).lerp(C[1], t * 2) : tmpColor.copy(C[1]).lerp(C[2], (t - 0.5) * 2);
-  }
-  const rand = (a, b) => a + Math.random() * (b - a);
-
-  /* ---- Auxetic sheet ---- */
-  const N = mode === "home" ? 9 : 6;
-  const sheet = new THREE.InstancedMesh(geo, solid, N * N);
-  const sheetGroup = new THREE.Group();
-  sheetGroup.add(sheet);
-  scene.add(sheetGroup);
-
-  const cells = [];
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
-      const k = cells.length;
-      cells.push({
-        i: i - (N - 1) / 2,
-        j: j - (N - 1) / 2,
-        s: (i + j) % 2 ? 1 : -1,
-        from: new THREE.Vector3(rand(-18, 18), rand(-14, 14), rand(-14, 6)),
-        fromRot: new THREE.Euler(rand(0, 6), rand(0, 6), rand(0, 6)),
-        delay: (i + j) / (2 * N) + rand(0, 0.4),
-      });
-      sheet.setColorAt(k, gradient((i + (N - 1 - j)) / (2 * (N - 1)) + rand(-0.08, 0.08)));
-    }
-  }
-
-  /* ---- Floating cubes ---- */
+  /* ---- floating cubes ---- */
   const M = mode === "home" ? 130 : 60;
-  const dust = new THREE.InstancedMesh(geo, glass, M);
+  const glass = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.05, transparent: true, opacity: 0.78 });
+  const dust = new THREE.InstancedMesh(ctx.geo, glass, M);
   const dustGroup = new THREE.Group();
   dustGroup.add(dust);
   scene.add(dustGroup);
@@ -109,8 +450,7 @@ function init(canvas) {
     dust.setColorAt(k, gradient(Math.pow(Math.random(), 1.6)));
   }
 
-  /* ---- Layout ---- */
-  const base = new THREE.Euler(-0.55, 0.5, 0.62);
+  /* ---- layout ---- */
   function layout() {
     const w = host.clientWidth, h = host.clientHeight;
     if (!w || !h) return;
@@ -119,15 +459,15 @@ function init(canvas) {
     camera.updateProjectionMatrix();
     const wide = camera.aspect > 1.1;
     if (mode === "home") {
-      sheetGroup.position.set(wide ? 3.4 : 0.5, wide ? -1.4 : -2.2, 0);
-      sheetGroup.scale.setScalar(wide ? 1 : 0.7);
+      holder.position.set(wide ? 3.4 : 0.5, wide ? -1.4 : -2.2, 0);
+      holder.scale.setScalar(wide ? 1 : 0.7);
     } else {
-      sheetGroup.position.set(wide ? 4 + camera.aspect * 2.2 : 2.5, wide ? 1.2 : 3.2, -2);
-      sheetGroup.scale.setScalar(wide ? 0.95 : 0.6);
+      holder.position.set(wide ? 3.5 + camera.aspect * 2.2 : 2.5, wide ? 1 : 3.2, -2);
+      holder.scale.setScalar(wide ? 0.9 : 0.55);
     }
   }
 
-  /* ---- Interaction ---- */
+  /* ---- interaction ---- */
   const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
   window.addEventListener("pointermove", (e) => {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -140,74 +480,57 @@ function init(canvas) {
     if (visible && !reduced) loop();
   }).observe(host);
 
-  const dummy = new THREE.Object3D();
-  const ease = (t) => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+  function draw(time, dt) {
+    built.update(time, dt);
 
-  function draw(time) {
-    // auxetic opening angle (rad); 0 = closed tiling, ~0.6 = wide open
-    const theta = reduced ? 0.38 : 0.32 + 0.27 * Math.sin(time * 0.5 - 1.2);
-    const d = Math.cos(theta) + Math.sin(theta); // centre spacing of rotating squares
-
-    for (let k = 0; k < cells.length; k++) {
-      const c = cells[k];
-      const p = reduced ? 1 : ease((time - 0.2 - c.delay) / 1.8);
-      const z = Math.sin(time * 0.8 + c.i * 0.45 + c.j * 0.3) * 0.18;
-      dummy.position.set(c.i * d, c.j * d, z).lerp(c.from, 1 - p);
-      dummy.rotation.set(c.fromRot.x * (1 - p), c.fromRot.y * (1 - p), c.s * theta * p + c.fromRot.z * (1 - p));
-      dummy.scale.setScalar(0.95);
-      dummy.updateMatrix();
-      sheet.setMatrixAt(k, dummy.matrix);
-    }
-    sheet.instanceMatrix.needsUpdate = true;
-
+    const d = ctx.dummy;
     for (let k = 0; k < bits.length; k++) {
       const b = bits[k];
-      dummy.position.set(b.p.x, b.p.y + Math.sin(time * 0.6 + b.phase) * b.amp, b.p.z);
-      dummy.rotation.set(b.rot.x + b.spin.x * time, b.rot.y + b.spin.y * time, b.rot.z + b.spin.z * time);
-      dummy.scale.setScalar(b.size);
-      dummy.updateMatrix();
-      dust.setMatrixAt(k, dummy.matrix);
+      d.position.set(b.p.x, b.p.y + Math.sin(time * 0.6 + b.phase) * b.amp, b.p.z);
+      d.rotation.set(b.rot.x + b.spin.x * time, b.rot.y + b.spin.y * time, b.rot.z + b.spin.z * time);
+      d.scale.setScalar(b.size);
+      d.updateMatrix();
+      dust.setMatrixAt(k, d.matrix);
     }
     dust.instanceMatrix.needsUpdate = true;
 
     mouse.sx += (mouse.x - mouse.sx) * 0.04;
     mouse.sy += (mouse.y - mouse.sy) * 0.04;
     const scroll = Math.min(1.5, window.scrollY / Math.max(1, host.clientHeight));
-    sheetGroup.rotation.set(
-      base.x + mouse.sy * 0.18 - scroll * 0.35,
-      base.y + Math.sin(time * 0.12) * 0.3 + mouse.sx * 0.3,
-      base.z + scroll * 0.2
-    );
+    holder.rotation.set(mouse.sy * 0.18 - scroll * 0.35, mouse.sx * 0.3, scroll * 0.2);
     dustGroup.position.set(-mouse.sx * 0.6, mouse.sy * 0.4 + scroll * 5, 0);
     dustGroup.rotation.y = time * 0.015;
 
     renderer.render(scene, camera);
   }
 
-  let raf = 0;
+  let raf = 0, last = 0;
   const t0 = performance.now();
   function loop() {
     cancelAnimationFrame(raf);
+    last = performance.now();
     const tick = (now) => {
       if (!visible) return;
-      draw((now - t0) / 1000);
+      // rAF timestamps can precede t0/last slightly: clamp so time never goes negative
+      const dt = Math.max(0, (now - last) / 1000);
+      last = now;
+      draw(Math.max(0, (now - t0) / 1000), dt);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
   }
 
+  const still = () => draw(4, 0);
   layout();
-  new ResizeObserver(() => {
-    layout();
-    if (reduced) draw(0);
-  }).observe(host);
+  new ResizeObserver(() => { layout(); if (reduced) still(); }).observe(host);
+  new MutationObserver(() => { applyTheme(); if (reduced) still(); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-  new MutationObserver(() => {
-    applyTheme();
-    if (reduced) draw(0);
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-
-  if (reduced) draw(0);
+  if (reduced) still();
   else loop();
   requestAnimationFrame(() => canvas.classList.add("is-ready"));
 }
+
+/* ---------- start (after BUILDERS is defined) ---------- */
+const sceneCanvas = document.querySelector("canvas[data-scene]");
+if (sceneCanvas) init(sceneCanvas);
