@@ -9,7 +9,7 @@
    NAME                 idea
    auxetic  (default)   rotating-squares lattice that grows in both directions
    waves                interference of two sources: a PDE solution field
-   network              graph with message-passing pulses between nodes
+   orbits               people circling shared ideas on Kepler orbits
    layers               neural-network layers with a signal flowing through
    stream               3D waterfall of a live signal: new data keeps arriving
    flock                agent-based swarm (separation, alignment, cohesion)
@@ -127,50 +127,61 @@ const BUILDERS = {
     };
   },
 
-  /* Graph with message passing: a pulse hops outward from a source node */
-  network(ctx) {
-    const n = 38, R = 4.2;
-    const pos = [], size = [], base = [];
-    for (let k = 0; k < n; k++) {
-      const yv = 1 - (2 * (k + 0.5)) / n, r = Math.sqrt(1 - yv * yv), phi = k * 2.39996;
-      const j = rand(0.75, 1.1);
-      pos.push(new THREE.Vector3(Math.cos(phi) * r * R * j, yv * R * j, Math.sin(phi) * r * R * j));
-      size.push(rand(0.32, 0.7));
-      base.push(gradient(Math.random()));
-    }
-    // connect each node to its 3 nearest neighbours
-    const adj = Array.from({ length: n }, () => new Set());
-    for (let a = 0; a < n; a++) {
-      pos.map((p, b) => [b, p.distanceTo(pos[a])]).filter(([b]) => b !== a)
-        .sort((u, v) => u[1] - v[1]).slice(0, 3)
-        .forEach(([b]) => { adj[a].add(b); adj[b].add(a); });
-    }
-    const seg = [];
-    adj.forEach((s, a) => s.forEach((b) => { if (a < b) seg.push(...pos[a].toArray(), ...pos[b].toArray()); }));
-    // hop distance from every node (BFS)
-    const hops = pos.map((_, s) => {
-      const d = new Array(n).fill(99); d[s] = 0;
-      const q = [s];
-      while (q.length) { const a = q.shift(); adj[a].forEach((b) => { if (d[b] > d[a] + 1) { d[b] = d[a] + 1; q.push(b); } }); }
-      return d;
+  /* Orbits: people circling shared ideas, inner orbits faster (Kepler: ω ∝ r^-1.5) */
+  orbits(ctx) {
+    const radii = [1.9, 2.7, 3.5, 4.3, 5.1], counts = [4, 6, 8, 10, 12];
+    const tilts = [[0.15, 1, 0.1], [-0.75, 1, 0.25], [0.6, 1, -0.55], [-0.25, 1, -0.95], [0.95, 1, 0.4]];
+    const orbits = radii.map((r, i) => {
+      // tilted orbital plane: orthonormal basis (u, v)
+      const n = new THREE.Vector3(...tilts[i]).normalize();
+      const u = new THREE.Vector3(1, 0, 0).cross(n).normalize();
+      const v = new THREE.Vector3().crossVectors(n, u);
+      return { r, u, v, w: 0.9 * Math.pow(r / radii[0], -1.5), count: counts[i], phase: rand(0, 6) };
     });
-    const mesh = makeCubes(ctx, n);
+    const total = counts.reduce((a, b) => a + b, 0);
+    const core = 8;
+    const mesh = makeCubes(ctx, total + core);
+    // faint orbit paths
+    const seg = [], SEGS = 96;
+    orbits.forEach((o) => {
+      for (let s = 0; s < SEGS; s++) {
+        const a0 = (s / SEGS) * Math.PI * 2, a1 = ((s + 1) / SEGS) * Math.PI * 2;
+        const p0 = o.u.clone().multiplyScalar(Math.cos(a0) * o.r).addScaledVector(o.v, Math.sin(a0) * o.r);
+        const p1 = o.u.clone().multiplyScalar(Math.cos(a1) * o.r).addScaledVector(o.v, Math.sin(a1) * o.r);
+        seg.push(...p0.toArray(), ...p1.toArray());
+      }
+    });
+    const col = new THREE.Color();
+    let k = 0;
+    orbits.forEach((o, i) => { for (let j = 0; j < o.count; j++) mesh.setColorAt(k++, gradient(i / (radii.length - 1) + rand(-0.08, 0.08), col)); });
+    for (let c = 0; c < core; c++) mesh.setColorAt(total + c, col.copy(ctx.accent));
     const g = new THREE.Group();
     g.add(mesh, lines(ctx, seg));
-    const col = new THREE.Color(), T = 5.5;
+    const P = new THREE.Vector3();
     return {
       object: g,
       update(t) {
-        const cycle = Math.floor(t / T), src = (cycle * 11 + 3) % n, front = (t % T) * 1.5;
-        for (let k = 0; k < n; k++) {
-          const a = ctx.reduced ? 0 : Math.exp(-Math.pow(front - hops[src][k], 2) * 2.2);
-          const p = pos[k];
-          put(ctx, mesh, k, p.x, p.y, p.z, t * 0.2 + k, t * 0.15 + k * 2, 0, size[k] * (1 + 0.45 * a));
-          mesh.setColorAt(k, col.copy(base[k]).lerp(ctx.accent, a * 0.85));
+        let k = 0;
+        orbits.forEach((o) => {
+          for (let j = 0; j < o.count; j++, k++) {
+            const a = o.phase + (j / o.count) * Math.PI * 2 + t * o.w * 0.35;
+            P.copy(o.u).multiplyScalar(Math.cos(a) * o.r).addScaledVector(o.v, Math.sin(a) * o.r);
+            put(ctx, mesh, k, P.x, P.y, P.z, t * 0.6 + j, t * 0.4 + k, 0, 0.36);
+          }
+        });
+        // core: a 2×2×2 block that gently breathes and turns
+        const gap = 0.36 + 0.06 * Math.sin(t * 1.2);
+        for (let c = 0; c < core; c++) {
+          const x = c & 1 ? gap : -gap, y = c & 2 ? gap : -gap, z = c & 4 ? gap : -gap;
+          P.set(x, y, z).applyAxisAngle(new THREE.Vector3(0, 1, 0), t * 0.4);
+          put(ctx, mesh, total + c, P.x, P.y, P.z, 0, t * 0.4, 0, 0.62);
         }
         mesh.instanceMatrix.needsUpdate = true;
+        g.rotation.set(0.75, t * 0.06, 0.15);
+      },
+      onTheme() {
+        for (let c = 0; c < core; c++) mesh.setColorAt(total + c, ctx.accent);
         mesh.instanceColor.needsUpdate = true;
-        g.rotation.set(0.25, t * 0.08, 0.1);
       },
     };
   },
