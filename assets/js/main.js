@@ -138,6 +138,231 @@
   });
   document.body.id = document.body.id || "top";
 
+  /* ---------- Profile link icons (People page) ----------
+     Links are written as plain text ("Email", "LinkedIn", ...) in the HTML;
+     here they become icon buttons, keeping the text as the accessible name. */
+  const svg = (body) =>
+    `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+  const SOCIAL_ICONS = {
+    email: svg('<rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 6.5 9 6.5 9-6.5"/>'),
+    linkedin: svg('<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>'),
+    github: svg('<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>'),
+    scholar: svg('<path d="M22 9.5 12 4.5 2 9.5l10 5 10-5z"/><path d="M6 11.5v5c3.5 2.5 8.5 2.5 12 0v-5"/><path d="M22 9.5v5"/>'),
+    cv: svg('<path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><path d="M14 2.5V8h5.5M15.5 13h-7M15.5 17h-7"/>'),
+    institution: svg('<path d="M3 9.5 12 4l9 5.5"/><path d="M4 21h16M5 18h14"/><path d="M6.5 10.5V18M10 10.5V18M14 10.5V18M17.5 10.5V18"/><path d="M4 9.5h16"/>'),
+    website: svg('<circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.8 3.9 6 3.9 9.5s-1.3 6.7-3.9 9.5c-2.6-2.8-3.9-6-3.9-9.5S9.4 5.3 12 2.5z"/>'),
+  };
+  /* ---------- Generative card art (People page) ----------
+     Every member card gets its own abstract "science" drawing behind the text.
+     The style rotates through the set below and the details are seeded from the
+     person's name, so each card is unique but stays the same on every visit. */
+  function seeded(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 3432918353), (h = (h << 13) | (h >>> 19));
+    return function () {
+      h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+      return ((h ^= h >>> 16) >>> 0) / 4294967296;
+    };
+  }
+  const f1 = (n) => n.toFixed(1);
+  const ART = {
+    // Re-entrant (auxetic) honeycomb
+    lattice(r) {
+      const w = 52 + r() * 12, h = w * 0.9, d = w * (0.18 + r() * 0.12);
+      let p = "";
+      for (let y = -h; y < 340; y += h)
+        for (let x = -w; x < 340; x += w)
+          p += `M${f1(x)} ${f1(y)}h${f1(w)}l${f1(-d)} ${f1(h / 2)}l${f1(d)} ${f1(h / 2)}h${f1(-w)}l${f1(d)} ${f1(-h / 2)}z`;
+      return `<g class="mv-breathe"><g transform="rotate(${f1(r() * 30 - 15)} 150 150)"><path class="a" d="${p}"/></g></g>`;
+    },
+    // Iso-contours of a smooth field
+    contours(r) {
+      const cx = 90 + r() * 120, cy = 140 + r() * 80, k1 = 2 + Math.floor(r() * 3), k2 = 3 + Math.floor(r() * 3), ph = r() * 6;
+      let s = "";
+      for (let i = 2; i <= 16; i += 2) {
+        let d = "";
+        for (let j = 0; j <= 72; j++) {
+          const t = (j / 72) * Math.PI * 2;
+          const rad = i * 13 * (1 + 0.12 * Math.sin(k1 * t + ph + i * 0.2) + 0.06 * Math.cos(k2 * t - ph));
+          d += (j ? "L" : "M") + f1(cx + rad * Math.cos(t)) + " " + f1(cy + rad * Math.sin(t));
+        }
+        s += `<path class="${i % 4 ? "a" : "b"}" d="${d}z"/>`;
+      }
+      return `<g class="mv-spin" style="transform-origin:${f1(cx)}px ${f1(cy)}px">${s}</g>`;
+    },
+    // Graph / neural network
+    network(r) {
+      const n = Array.from({ length: 9 }, () => [r() * 300, 140 + r() * 160]);
+      let s = "";
+      n.forEach((a, i) => {
+        n.map((b, j) => [j, (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2]).sort((p, q) => p[1] - q[1]).slice(1, 2)
+          .forEach(([j]) => (s += `<path class="a mv-signal" style="animation-delay:-${f1(r() * 4)}s" d="M${f1(a[0])} ${f1(a[1])}L${f1(n[j][0])} ${f1(n[j][1])}"/>`));
+      });
+      n.forEach((a, i) => (s += `<circle class="${i % 3 ? "f" : "fb"} mv-pulse" style="animation-delay:-${f1(r() * 3)}s" cx="${f1(a[0])}" cy="${f1(a[1])}" r="${f1(2 + r() * 3)}"/>`));
+      return s;
+    },
+    // Interfering waves
+    waves(r) {
+      const k1 = 0.02 + r() * 0.02, k2 = 0.035 + r() * 0.03, ph = r() * 6;
+      let s = "";
+      for (let i = 0; i < 7; i++) {
+        let d = "";
+        const y0 = 150 + i * 22, amp = 4 + 10 * Math.sin((i / 6) * Math.PI);
+        for (let x = -40; x <= 340; x += 6)
+          d += (x > -40 ? "L" : "M") + x + " " + f1(y0 + amp * (Math.sin(x * k1 + ph + i * 0.35) + 0.6 * Math.sin(x * k2 - i * 0.5)));
+        s += `<path class="${i % 5 ? "a" : "b"}" d="${d}"/>`;
+      }
+      return `<g class="mv-drift">${s}</g>`;
+    },
+    // Activation field on a grid of dots
+    dots(r) {
+      const peaks = Array.from({ length: 3 }, () => [r() * 300, 80 + r() * 220, 40 + r() * 50]);
+      let s = "";
+      for (let y = 14; y < 300; y += 26)
+        for (let x = 14; x < 300; x += 26) {
+          const v = peaks.reduce((acc, [px, py, w]) => acc + Math.exp(-((x - px) ** 2 + (y - py) ** 2) / (2 * w * w)), 0);
+          s += `<circle class="${v > 0.6 ? "fb" : "f"} mv-dot" style="animation-delay:-${f1(((x + y) / 600) * 4)}s" cx="${x}" cy="${y}" r="${f1(0.7 + Math.min(v, 1) * 3.4)}"/>`;
+        }
+      return s;
+    },
+    // Tilted orbits; each body travels its ellipse, inner ones faster (Kepler)
+    orbits(r) {
+      const cx = 150 + r() * 60 - 30, cy = 190 + r() * 40;
+      let s = "";
+      for (let i = 0; i < 4; i++) {
+        const rx = 50 + i * 34, ry = rx * (0.3 + r() * 0.3), rot = r() * 180;
+        const ring = `M${f1(cx - rx)} ${f1(cy)}a${f1(rx)} ${f1(ry)} 0 1 0 ${f1(2 * rx)} 0a${f1(rx)} ${f1(ry)} 0 1 0 ${f1(-2 * rx)} 0`;
+        const period = f1(10 * Math.pow(rx / 50, 1.5));
+        s += `<g transform="rotate(${f1(rot)} ${f1(cx)} ${f1(cy)})"><path class="${i % 3 ? "a" : "b"}" d="${ring}"/>` +
+          `<circle class="fb" r="3.5"><animateMotion dur="${period}s" begin="-${f1(r() * 10)}s" repeatCount="indefinite" path="${ring}"/></circle></g>`;
+      }
+      return s + `<circle class="fb mv-pulse" cx="${f1(cx)}" cy="${f1(cy)}" r="6"/>`;
+    },
+    // Streamlines of a vortex flow
+    flow(r) {
+      const a = 0.012 + r() * 0.01, b = 0.015 + r() * 0.01, ph = r() * 6;
+      let s = "";
+      for (let i = 0; i < 12; i++) {
+        let x = r() * 300, y = 40 + r() * 260, d = `M${f1(x)} ${f1(y)}`;
+        for (let k = 0; k < 40; k++) {
+          const ang = Math.sin(x * a + ph) * 2.2 + Math.cos(y * b - ph) * 2.2;
+          x += Math.cos(ang) * 6; y += Math.sin(ang) * 6;
+          d += `L${f1(x)} ${f1(y)}`;
+        }
+        s += `<path class="${i % 6 ? "a" : "b"} mv-flow" style="animation-delay:-${f1(r() * 3)}s" d="${d}"/>`;
+      }
+      return s;
+    },
+    // Finite-element style triangle mesh with a "stress" hotspot
+    mesh(r) {
+      const step = 46, pts = [], cols = 9, hx = r() * 300, hy = 120 + r() * 160;
+      for (let j = 0; j < 9; j++) {
+        pts.push([]);
+        for (let i = 0; i < cols; i++) pts[j].push([i * step - 15 + (j % 2) * 15 + (r() - 0.5) * 12, j * step - 10 + (r() - 0.5) * 12]);
+      }
+      let s = "";
+      for (let j = 0; j < 8; j++)
+        for (let i = 0; i < cols - 1; i++) {
+          const A = pts[j][i], B = pts[j][i + 1], C = pts[j + 1][i], D = pts[j + 1][i + 1];
+          for (const [p, q, u] of [[A, B, C], [B, D, C]]) {
+            const mx = (p[0] + q[0] + u[0]) / 3, my = (p[1] + q[1] + u[1]) / 3;
+            const v = Math.exp(-((mx - hx) ** 2 + (my - hy) ** 2) / 5000);
+            s += `<path class="${v > 0.35 ? "m mv-hot" : "a"}" style="--v:${f1(v * 0.55)}" d="M${f1(p[0])} ${f1(p[1])}L${f1(q[0])} ${f1(q[1])}L${f1(u[0])} ${f1(u[1])}z"/>`;
+          }
+        }
+      return s;
+    },
+    // Spectrum bars with an envelope
+    spectrum(r) {
+      const peaks = Array.from({ length: 3 }, () => [r() * 300, 20 + r() * 40, 0.5 + r() * 0.5]);
+      const val = (x) => peaks.reduce((acc, [px, w, h]) => acc + h * Math.exp(-((x - px) ** 2) / (2 * w * w)), 0.08);
+      let s = "";
+      for (let x = 6; x < 300; x += 16) {
+        const v = Math.min(val(x), 1.3), top = 300 - v * 120;
+        s += `<path class="${v > 0.7 ? "b" : "a"} mv-bar" style="animation-delay:-${f1(r() * 3)}s" d="M${x} 300V${f1(top)}"/>`;
+      }
+      return s;
+    },
+  };
+  const ART_ORDER = ["lattice", "waves", "network", "contours", "mesh", "orbits", "flow", "dots", "spectrum"];
+  document.querySelectorAll(".person").forEach((card, i) => {
+    const name = (card.querySelector("h3") || {}).textContent || String(i);
+    const style = card.dataset.art || ART_ORDER[i % ART_ORDER.length];
+    if (!ART[style]) return;
+    const art = document.createElement("div");
+    art.className = "person-art";
+    art.setAttribute("aria-hidden", "true");
+    art.innerHTML = `<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMax slice">${ART[style](seeded(name))}</svg>`;
+    card.prepend(art);
+  });
+  const artSvgs = document.querySelectorAll(".person-art svg");
+  const stillArt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  artSvgs.forEach((svg) => {
+    if (stillArt && svg.pauseAnimations) { svg.pauseAnimations(); svg.setCurrentTime(2); }
+  });
+  if (!stillArt && "IntersectionObserver" in window) {
+    // Only animate cards that are on screen
+    const artIO = new IntersectionObserver((entries) => entries.forEach(({ target, isIntersecting }) => {
+      target.parentElement.classList.toggle("is-paused", !isIntersecting);
+      if (target.pauseAnimations) isIntersecting ? target.unpauseAnimations() : target.pauseAnimations();
+    }));
+    artSvgs.forEach((svg) => artIO.observe(svg));
+  }
+
+  /* ---------- PI panel art ----------
+     A re-entrant (auxetic) honeycomb blended into the panel background. Its rib
+     angle slowly cycles, so the lattice widens and grows taller at the same
+     time: the negative Poisson's ratio behind much of the PI's work. */
+  const piPanel = document.querySelector("[data-pi-art]");
+  if (piPanel) {
+    const bg = document.createElement("div");
+    bg.className = "pi-bg";
+    bg.setAttribute("aria-hidden", "true");
+    bg.innerHTML = `<svg viewBox="0 0 1200 800" preserveAspectRatio="xMaxYMax slice"><path class="pl-rib"/><path class="pl-node"/></svg>`;
+    piPanel.prepend(bg);
+    const rib = bg.querySelector(".pl-rib"), node = bg.querySelector(".pl-node");
+    const L = 46, Hr = 54, AX = 1200, AY = 800; // rib lengths; lattice is anchored at the bottom-right corner
+    const draw = (theta) => {
+      const c = Math.cos(theta), s = Math.sin(theta), W = 2 * L * c, H = 2 * (Hr + L * s);
+      let d = "", n = "";
+      for (let j = 0; j < Math.ceil(AY / H) + 1; j++)
+        for (let i = 0; i < Math.ceil(AX / W) + 2; i++) {
+          const x = AX - i * W, y = AY - j * H; // build upward and leftward from the corner
+          const y1 = y - Hr, y2 = y1 - L * s, y3 = y2 - Hr, y4 = y3 - L * s;
+          d += `M${f1(x)} ${f1(y)}V${f1(y1)}L${f1(x - W / 2)} ${f1(y2)}V${f1(y3)}L${f1(x)} ${f1(y4)}` +
+               `M${f1(x)} ${f1(y1)}L${f1(x + W / 2)} ${f1(y2)}M${f1(x - W / 2)} ${f1(y3)}L${f1(x - W)} ${f1(y4)}`;
+          n += `M${f1(x)} ${f1(y1)}h0M${f1(x - W / 2)} ${f1(y3)}h0`;
+        }
+      rib.setAttribute("d", d);
+      node.setAttribute("d", n);
+    };
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const A0 = (-24 * Math.PI) / 180, A1 = (-8 * Math.PI) / 180;
+    let running = false, raf = 0, t0 = performance.now();
+    const tick = (now) => {
+      const k = 0.5 - 0.5 * Math.cos(((now - t0) / 9000) * Math.PI * 2); // 9 s breathing cycle
+      draw(A0 + (A1 - A0) * k);
+      raf = running ? requestAnimationFrame(tick) : 0;
+    };
+    draw(A0);
+    if (!reduced && "IntersectionObserver" in window)
+      new IntersectionObserver(([e]) => {
+        running = e.isIntersecting;
+        if (running && !raf) raf = requestAnimationFrame(tick);
+      }).observe(piPanel);
+  }
+
+  document.querySelectorAll(".person .socials a, .pi .socials a").forEach((a) => {
+    const label = a.textContent.trim();
+    const icon = SOCIAL_ICONS[a.dataset.social || label.toLowerCase()];
+    if (!icon) return;
+    const tip = a.href.startsWith("mailto:") ? a.href.slice(7) : label;
+    a.setAttribute("aria-label", label === "Email" ? "Email " + tip : label);
+    a.title = tip;
+    a.classList.add("icon-link");
+    a.innerHTML = icon;
+  });
+
   /* ---------- Header scroll state ---------- */
   const header = document.querySelector(".site-header");
   const onScroll = () => header && header.classList.toggle("is-scrolled", window.scrollY > 24);
