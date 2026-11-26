@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="assets/js/theme.js?v=2026111901"></script>
-  <link rel="stylesheet" href="assets/css/style.css?v=2026111901">
-  <script src="assets/js/main.js?v=2026111901" defer></script>
-  <script type="module" src="assets/js/scene.js?v=2026111901"></script>
+  <script src="assets/js/theme.js?v=2026112627"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=2026112627">
+  <script src="assets/js/main.js?v=2026112627" defer></script>
+  <script type="module" src="assets/js/scene.js?v=2026112627"></script>
 </head>
 <body data-page="people">
   <div data-include="header"></div>
@@ -29,33 +29,85 @@
 
     <!--
       HOW TO EDIT
-      - Photos: put square images in assets/img/people/ and add
-        <img src="assets/img/people/firstname-lastname.jpg" alt="Firstname Lastname">
-        inside the .avatar div (the initials stay underneath as a fallback).
-      - Copy a <article class="person"> block to add someone.
+      - Photos: assets/img/people/firstname-lastname.jpg, cropped to a 4:5 portrait,
+        about 640px wide. The initials in the <span> show if the image is missing.
+      - Copy an <article class="person"> block to add someone; the quote and
+        "Background" (<details>) parts are optional.
+      - When someone leaves, move them to an Alumni group, e.g.
+        <div class="group alumni">
+          <div class="section-head reveal"><h2 class="title">Alumni</h2></div>
+          <ul class="rows reveal">
+            <li class="row"><span class="row-title">Name</span><span class="row-date">M.Tech 2026</span><span class="row-date">Now at [Company]</span></li>
+          </ul>
+        </div>
     -->
 
     <!-- Principal investigator -->
     <section class="section">
       <div class="container">
-        <article class="box pi reveal">
-          <div class="avatar" aria-hidden="true">FL</div>
-          <div class="stack" style="align-self:end">
-            <span class="eyebrow">Principal Investigator</span>
-            <h2>Dr. Firstname Lastname</h2>
-            <p class="body-lg">[Designation], [Department], [University Name]. [Short bio: education, previous positions, and the questions that drive the lab. Two or three sentences work best.]</p>
+        <article class="box pi reveal" data-pi-art>
+          <div class="pi-side">
+            <div class="avatar"><span aria-hidden="true">RM</span><img src="assets/img/people/rajnish-mallick.jpg" alt="Dr. Rajnish Mallick"></div>
+          </div>
+          <div class="stack pi-main">
+            <span class="pi-badge">Principal Investigator</span>
+            <h2>Dr. Rajnish Mallick</h2>
+            <p class="pi-role">Assistant Professor, School of Interdisciplinary Design and Innovation (SIDI), IIITDM Kancheepuram · SSHN Visiting Fellow Professor, ISAE-SUPAERO, Toulouse</p>
+            <p class="body-lg">Rajnish received his MS and PhD in Aerospace Engineering from the Indian Institute of Science (IISc), Bengaluru, where his work on smart piezoelectric structures for active helicopter vibration control was transferred to HAL. He then spent five years at Rolls-Royce R&amp;D, rising to Staff Data Scientist and AI Hub Lead for India. He then held a postdoctoral fellowship at IISc and served as faculty in Mechanical Engineering at Thapar Institute of Engineering and Technology, before joining IIITDM Kancheepuram in 2024. At AIMS he brings mechanics, materials and machine learning together to design structures that do more with less.</p>
+            <figure class="pi-quote">
+              <blockquote>Arise, awake, and stop not till the goal is reached.</blockquote>
+              <figcaption>Swami Vivekananda</figcaption>
+            </figure>
             <div class="chips">
+              <span class="tag">Auxetic metamaterials</span>
               <span class="tag">Scientific ML</span>
-              <span class="tag">Computational mechanics</span>
-              <span class="tag">Materials design</span>
+              <span class="tag">AI-driven inverse design</span>
+              <span class="tag">Morphing &amp; smart structures</span>
+              <span class="tag">Engineering optimisation</span>
             </div>
             <div class="socials">
-              <a href="#" data-email>Email</a>
-              <a href="#">Scholar</a>
-              <a href="#">CV</a>
-              <a href="#">GitHub</a>
+              <a href="mailto:rajnish.mallick@iiitdm.ac.in">Email</a>
+              <a href="https://www.linkedin.com/in/drmallickrajnish/" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="https://scholar.google.com/citations?user=FQIuiJoAAAAJ&amp;hl=en" target="_blank" rel="noopener">Scholar</a>
+              <a href="https://github.com/rajnishmallick" target="_blank" rel="noopener">GitHub</a>
+              <a href="https://www.iiitdm.ac.in/people/faculty/rajnish.mallick@iiitdm.ac.in" target="_blank" rel="noopener" data-social="institution">IIITDM faculty profile</a>
             </div>
           </div>
+
+          <details class="pi-details">
+            <summary><span>Education, experience &amp; honours</span><span class="pi-chev" aria-hidden="true"></span></summary>
+            <div class="pi-more">
+              <div class="pi-col">
+                <span class="eyebrow">Education</span>
+                <ul class="timeline">
+                  <li><span class="tl-year">2009–2014</span><span><strong>PhD, Aerospace Engineering</strong>Indian Institute of Science (IISc), Bengaluru</span></li>
+                  <li><span class="tl-year">2009–2011</span><span><strong>MS, Aerospace Engineering</strong>Indian Institute of Science (IISc), Bengaluru (direct-PhD route)</span></li>
+                </ul>
+              </div>
+              <div class="pi-col">
+                <span class="eyebrow">Experience</span>
+                <ul class="timeline">
+                  <li><span class="tl-year">2024–Present</span><span><strong>Assistant Professor</strong>SIDI, IIITDM Kancheepuram</span></li>
+                  <li><span class="tl-year">2025–Present</span><span><strong>SSHN Visiting Fellow Professor</strong>ISAE-SUPAERO, Toulouse (Embassy of France)</span></li>
+                  <li><span class="tl-year">2021–2024</span><span><strong>Faculty, Mechanical Engineering</strong>Thapar Institute of Engineering and Technology; Vice-President, Entrepreneurship Cell</span></li>
+                  <li><span class="tl-year">2020–2021</span><span><strong>Postdoctoral Fellow &amp; Research and Technology Lead</strong>NMCAD Lab, Aerospace Engineering, IISc</span></li>
+                  <li><span class="tl-year">2015–2020</span><span><strong>Staff Data Scientist &amp; AI Hub Lead, India</strong>Rolls-Royce plc, R2 Data Labs</span></li>
+                  <li><span class="tl-year">2008–2009</span><span><strong>Design Engineer</strong>John Deere Technology Centre, Pune</span></li>
+                </ul>
+              </div>
+              <div class="pi-col">
+                <span class="eyebrow">Honours &amp; service</span>
+                <ul class="timeline">
+                  <li><span class="tl-year">2025</span><span><strong>SSHN Visiting Fellowship</strong>Embassy of France in India</span></li>
+                  <li><span class="tl-year">2022</span><span><strong>Proposal reviewer</strong>U.S. Department of Energy review panel</span></li>
+                  <li><span class="tl-year">2017</span><span><strong>Award for Technical Contributions</strong>Rolls-Royce</span></li>
+                  <li><span class="tl-year">2015</span><span><strong>Global Team Leader, winning team</strong>32nd AHS International Student Design Competition (Boeing)</span></li>
+                  <li><span class="tl-year">2012</span><span><strong>Aerospace Young Engineer Award</strong>Best PhD research in smart aerospace structures</span></li>
+                  <li><span class="tl-year">2010</span><span><strong>Worldwide Engineering Excellence Award</strong>John Deere</span></li>
+                </ul>
+              </div>
+            </div>
+          </details>
         </article>
       </div>
     </section>
@@ -64,74 +116,139 @@
       <div class="container">
 
         <div class="group">
-          <div class="section-head reveal"><h2 class="title">PhD researchers</h2></div>
+          <div class="section-head reveal"><h2 class="title">IIITDM Kancheepuram</h2></div>
+          <h3 class="subhead reveal">PhD scholars</h3>
           <div class="people">
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">PhD · 2024–</span>
-              <h3>Firstname Lastname</h3>
-              <p>Physics-guided surrogate models for nonlinear solids.</p>
-              <div class="socials"><a href="#">Email</a><a href="#">Scholar</a></div>
+              <div class="avatar"><span aria-hidden="true">DN</span><img src="assets/img/people/dheeraj-s-nair.jpg" alt="Dheeraj S Nair" loading="lazy"><span class="role">PhD · 2025 – Present</span></div>
+              <div>
+                <h3>Dheeraj S Nair</h3>
+                <p class="affil">School of Interdisciplinary Design and Innovation (SIDI), IIITDM Kancheepuram</p>
+              </div>
+              <p class="focus">AI for metamaterial design.</p>
+              <blockquote class="motto">It is not our abilities that show what we truly are. It is our choices.</blockquote>
+              <details class="more"><summary>Background</summary><ul><li>M.Tech, Computer Science (Data Science &amp; AI), Cochin University of Science and Technology (CUSAT), Kochi</li><li>B.Tech, Electrical &amp; Electronics Engineering, Government Engineering College, Thrissur</li><li>Previously Assistant System Engineer, Tata Consultancy Services</li></ul></details>
+              <div class="socials"><a href="mailto:id25d0006@iiitdm.ac.in">Email</a><a href="https://in.linkedin.com/in/dheeraj-s-nair-076210189" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/DHEERAJSNAIR" target="_blank" rel="noopener">GitHub</a></div>
             </article>
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">PhD · 2024–</span>
-              <h3>Firstname Lastname</h3>
-              <p>Learning solution maps for flows in complex geometries.</p>
-              <div class="socials"><a href="#">Email</a><a href="#">GitHub</a></div>
+              <div class="avatar"><span aria-hidden="true">BA</span><img src="assets/img/people/balaji-a.jpg" alt="Balaji A" loading="lazy"><span class="role">PhD · 2026 – Present</span></div>
+              <div>
+                <h3>Balaji A</h3>
+                <p class="affil">School of Interdisciplinary Design and Innovation (SIDI), IIITDM Kancheepuram · PEE, Ford Motor Company</p>
+              </div>
+              <p class="focus">Scientific machine learning for composites and auxetic materials.</p>
+              <details class="more"><summary>Background</summary><ul><li>Master's, Crescent University, 2011</li></ul></details>
+              <div class="socials"><a href="mailto:id26d0010@iiitdm.ac.in">Email</a></div>
             </article>
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">PhD · 2025–</span>
-              <h3>Firstname Lastname</h3>
-              <p>Inverse design of lattice materials with tailored response.</p>
-              <div class="socials"><a href="#">Email</a><a href="#">LinkedIn</a></div>
+              <div class="avatar"><span aria-hidden="true">SK</span><img src="assets/img/people/sree-soorya-kumar.jpg" alt="S C G Sree Soorya Kumar" loading="lazy"><span class="role">Direct PhD · 2026 – Present</span></div>
+              <div>
+                <h3>S C G Sree Soorya Kumar</h3>
+                <p class="affil">School of Interdisciplinary Design and Innovation (SIDI), IIITDM Kancheepuram</p>
+              </div>
+              <p class="focus">AI for metamaterial design.</p>
+              <details class="more"><summary>Background</summary><ul><li>Bachelor's, Computer Science and Engineering, IIITDM Kancheepuram, 2026</li></ul></details>
+              <div class="socials"><a href="mailto:id26d0012@iiitdm.ac.in">Email</a><a href="https://linkedin.com/in/scgssk" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/scgssk" target="_blank" rel="noopener">GitHub</a><a href="https://scholar.google.com/citations?hl=en&amp;user=ApZBy_kAAAAJ" target="_blank" rel="noopener">Scholar</a></div>
             </article>
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">PhD · 2025–</span>
-              <h3>Firstname Lastname</h3>
-              <p>Uncertainty and trust in learned simulators.</p>
-              <div class="socials"><a href="#">Email</a></div>
+              <div class="avatar"><span aria-hidden="true">VS</span><img src="assets/img/people/vivek-shukla.jpg" alt="Vivek Shukla" loading="lazy"><span class="role">PhD · 2026 – Present</span></div>
+              <div>
+                <h3>Vivek Shukla</h3>
+                <p class="affil">School of Interdisciplinary Design and Innovation (SIDI), IIITDM Kancheepuram · Scientist/Engineer, U R Rao Satellite Centre (URSC), Indian Space Research Organisation (ISRO), Bengaluru</p>
+              </div>
+              <p class="focus">AI-based inverse design of auxetic aero-structures for space, graded sandwich cores for energy absorption, and deployable spacecraft mechanisms.</p>
+              <details class="more"><summary>Background</summary><ul><li>M.E., Mechanical Engineering, Indian Institute of Science (IISc), Bangalore, 2013</li><li>B.Tech, Mechanical Engineering, Harcourt Butler Technological Institute (HBTI), Kanpur, 2003</li><li>Scientist/Engineer, U R Rao Satellite Centre (URSC), ISRO, since 2009; previously Laboratory for Electro-Optics Sensors (LEOS), ISRO (2005–2009) and Research Engineer, Indian Institute of Technology (IIT) Kanpur (2004)</li></ul></details>
+              <div class="socials"><a href="mailto:id26d0013@iiitdm.ac.in">Email</a><a href="https://www.linkedin.com/in/mechvivek" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/mechvivek-explore" target="_blank" rel="noopener">GitHub</a></div>
+            </article>
+          </div>
+          <!-- M.Tech students: uncomment when someone joins and add their cards.
+          <h3 class="subhead reveal">M.Tech students</h3>
+          <div class="people">
+          </div>
+          -->
+          <h3 class="subhead reveal">Student interns</h3>
+          <div class="people">
+            <article class="person reveal">
+              <div class="avatar"><span aria-hidden="true">PN</span><img src="assets/img/people/prasanna-venkatesh-narasimhan.jpg" alt="Prasanna Venkatesh Narasimhan" loading="lazy"><span class="role">B.Tech · 2026 – Present</span></div>
+              <div>
+                <h3>Prasanna Venkatesh Narasimhan</h3>
+                <p class="affil">Department of Mechanical Engineering, IIITDM Kancheepuram</p>
+              </div>
+              <p class="focus">Energy harvesting, metamaterials and product design.</p>
+              <blockquote class="motto">It's not who I am underneath, but which T-shirt I wear that defines me.</blockquote>
+              <div class="socials"><a href="mailto:me23b1031@iiitdm.ac.in">Email</a><a href="https://www.linkedin.com/in/prasanna-venkatesh-narasimhan-444814293/" target="_blank" rel="noopener">LinkedIn</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar"><span aria-hidden="true">MS</span><img src="assets/img/people/mukund-shah.jpg" alt="Mukund Shah" loading="lazy"><span class="role">Summer intern · 2026</span></div>
+              <div>
+                <h3>Mukund Shah</h3>
+                <p class="affil">Department of Computer Science and Engineering, IIITDM Kancheepuram</p>
+              </div>
+              <p class="focus">Neural networks, Lagrangian Neural Networks (LNNs) and visual mathematics.</p>
+              <details class="more"><summary>Background</summary><ul><li>Dual degree, Computer Science and Engineering, IIITDM Kancheepuram (ongoing)</li></ul></details>
+              <div class="socials"><a href="mailto:cs24i1042@iiitdm.ac.in">Email</a><a href="https://www.linkedin.com/in/mukund-shah-7b5645241" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/MagnusKalicharan" target="_blank" rel="noopener">GitHub</a></div>
             </article>
           </div>
         </div>
 
         <div class="group">
-          <div class="section-head reveal"><h2 class="title">Master's &amp; undergraduate</h2></div>
+          <div class="section-head reveal"><h2 class="title">External Researchers</h2></div>
           <div class="people">
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">M.Tech · 2025–</span>
-              <h3>Firstname Lastname</h3>
-              <p>Benchmarks for data-driven solvers.</p>
-              <div class="socials"><a href="#">Email</a></div>
+              <div class="avatar"><span aria-hidden="true">AB</span><img src="assets/img/people/anurag-balayan.jpg" alt="Anurag Balayan" loading="lazy"><span class="role">Researcher · 2023 – Present</span></div>
+              <div>
+                <h3>Anurag Balayan</h3>
+                <p class="affil">Department of Mechanical Engineering, Maulana Azad National Institute of Technology (MANIT), Bhopal</p>
+              </div>
+              <p class="focus">Auxetic metamaterials, AI-based design and optimisation, topology optimisation and computational mechanics.</p>
+              <blockquote class="motto">Be the force that drives the world.</blockquote>
+              <details class="more"><summary>Background</summary><ul><li>M.Tech, Machine Design, Maulana Azad National Institute of Technology (MANIT), Bhopal (ongoing)</li><li>B.E., Mechanical Engineering, Thapar Institute of Engineering and Technology, 2024</li><li>Previously Assistant Manager, Maruti Suzuki India Limited</li></ul></details>
+              <div class="socials"><a href="mailto:abalayan_be20@thapar.edu">Email</a><a href="https://www.linkedin.com/in/anuragbalayan05" target="_blank" rel="noopener">LinkedIn</a><a href="https://share.google/N0uNsjBAcpcJPFd8b" target="_blank" rel="noopener">Scholar</a></div>
             </article>
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">B.Tech · 2025–</span>
-              <h3>Firstname Lastname</h3>
-              <p>Simulation pipelines for cellular structures.</p>
-              <div class="socials"><a href="#">Email</a></div>
+              <div class="avatar"><span aria-hidden="true">NM</span><img src="assets/img/people/navdeep-malik.jpg" alt="Navdeep Malik" loading="lazy"><span class="role">Researcher · 2022 – Present</span></div>
+              <div>
+                <h3>Navdeep Malik</h3>
+                <p class="affil">Noise, Vibration and Harshness (NVH), Havells India Ltd</p>
+              </div>
+              <p class="focus">Metamaterials and morphing airfoils.</p>
+              <blockquote class="motto">Small efforts, repeated daily, grow into great results.</blockquote>
+              <details class="more"><summary>Background</summary><ul><li>M.Tech, Mechanical Engineering (Design), National Institute of Technology (NIT) Hamirpur</li></ul></details>
+              <div class="socials"><a href="mailto:navdeepmalik13@gmail.com">Email</a></div>
             </article>
             <article class="person reveal">
-              <div class="avatar" aria-hidden="true">FL</div>
-              <span class="role">Research intern · 2026</span>
-              <h3>Firstname Lastname</h3>
-              <p>Visualising learned physical fields.</p>
-              <div class="socials"><a href="#">Email</a></div>
+              <div class="avatar"><span aria-hidden="true">HN</span><img src="assets/img/people/harsh-navangul.jpg" alt="Harsh Navangul" loading="lazy"><span class="role">Researcher · 2026 – Present</span></div>
+              <div>
+                <h3>Harsh Navangul</h3>
+                <p class="affil">Honeywell Technologies</p>
+              </div>
+              <p class="focus">Double-arrow auxetic structures for ballistic impact, impact analysis and finite element analysis.</p>
+              <details class="more"><summary>Background</summary><ul><li>B.Tech, Mechanical Engineering, Vellore Institute of Technology (VIT), Chennai</li></ul></details>
+              <div class="socials"><a href="mailto:harsh.navangul9@gmail.com">Email</a><a href="https://www.linkedin.com/in/harsh-navangul-a14b0921b" target="_blank" rel="noopener">LinkedIn</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar"><span aria-hidden="true">KK</span><img src="assets/img/people/kushagra-kumar.jpg" alt="Kushagra Kumar" loading="lazy"><span class="role">Researcher · 2026 – Present</span></div>
+              <div>
+                <h3>Kushagra Kumar</h3>
+                <p class="affil">University of Stuttgart, Germany</p>
+              </div>
+              <p class="focus">Ballistic impact, composites, inverse design and metamaterials.</p>
+              <details class="more"><summary>Background</summary><ul><li>M.Sc., Computational Mechanics of Materials and Structures, University of Stuttgart (ongoing)</li><li>B.Tech, Mechanical Engineering, Vellore Institute of Technology (VIT), Chennai</li><li>Previously Battery System Engineer, Vazirani Automotive</li></ul></details>
+              <div class="socials"><a href="mailto:st205158@stud.uni-stuttgart.de">Email</a><a href="https://www.linkedin.com/in/kushagra-kumar-k88k" target="_blank" rel="noopener">LinkedIn</a></div>
+            </article>
+            <article class="person reveal">
+              <div class="avatar"><span aria-hidden="true">AS</span><img src="assets/img/people/aditya-sen.jpg" alt="Aditya Sen" loading="lazy"><span class="role">Researcher · 2026 – Present</span></div>
+              <div>
+                <h3>Aditya Sen</h3>
+                <p class="affil">Department of Mechanical Engineering, Vellore Institute of Technology (VIT), Vellore</p>
+              </div>
+              <p class="focus">Smart energy harvesting with metamaterials.</p>
+              <blockquote class="motto">A DNF (Did Not Finish) is better than a DNS (Did Not Start).</blockquote>
+              <details class="more"><summary>Background</summary><ul><li>B.Tech, Mechanical Engineering, Vellore Institute of Technology (VIT), Vellore (ongoing)</li><li>Previously summer intern, Stellantis India</li></ul></details>
+              <div class="socials"><a href="mailto:aditya.sen2023@vitstudent.ac.in">Email</a><a href="https://www.linkedin.com/in/aditya-sen-2464452b3" target="_blank" rel="noopener">LinkedIn</a></div>
             </article>
           </div>
         </div>
-
-        <div class="group alumni">
-          <div class="section-head reveal"><h2 class="title">Alumni</h2></div>
-          <ul class="rows reveal">
-            <li class="row"><span class="row-title">Firstname Lastname</span><span class="row-date">M.Tech 2025</span><span class="row-date">Now at [Company]</span></li>
-            <li class="row"><span class="row-title">Firstname Lastname</span><span class="row-date">B.Tech 2025</span><span class="row-date">PhD at [University]</span></li>
-          </ul>
-        </div>
-
       </div>
     </section>
 
