@@ -283,6 +283,32 @@
       }
       return s;
     },
+    // Generative "denoising": scattered noise settles into an auxetic lattice,
+    // holds, then dissolves again (diffusion models + inverse design)
+    diffusion(r) {
+      const L = 24, Hr = 28, th = (-22 * Math.PI) / 180, c = Math.cos(th), s = Math.sin(th), W = 2 * L * c, H = 2 * (Hr + L * s);
+      const pts = new Map(), edges = [];
+      const key = (x, y) => `${Math.round(x)},${Math.round(y)}`;
+      const add = (x, y) => { const k = key(x, y); if (!pts.has(k)) pts.set(k, [x, y]); return k; };
+      for (let j = 0; j < 4; j++)
+        for (let i = 0; i < 8; i++) {
+          const x = 300 - i * W + W / 4, y = 300 - j * H;
+          const y1 = y - Hr, y2 = y1 - L * s, y3 = y2 - Hr, y4 = y3 - L * s;
+          const a = add(x, y), b = add(x, y1), cc = add(x - W / 2, y2), d = add(x - W / 2, y3), e = add(x, y4);
+          edges.push([a, b], [b, cc], [cc, d], [d, e], [b, add(x + W / 2, y2)], [d, add(x - W, y4)]);
+        }
+      let es = "";
+      edges.forEach(([p, q]) => {
+        const A = pts.get(p), B = pts.get(q);
+        es += `M${f1(A[0])} ${f1(A[1])}L${f1(B[0])} ${f1(B[1])}`;
+      });
+      let ns = "";
+      pts.forEach(([x, y]) => {
+        const ang = r() * Math.PI * 2, rad = 25 + r() * 60;
+        ns += `<circle class="fb dif-node" style="--dx:${f1(Math.cos(ang) * rad)}px;--dy:${f1(Math.sin(ang) * rad)}px;animation-delay:-${f1(r() * 0.6)}s" cx="${f1(x)}" cy="${f1(y)}" r="2"/>`;
+      });
+      return `<path class="a dif-edge" d="${es}"/>${ns}`;
+    },
   };
   const ART_ORDER = ["lattice", "waves", "network", "contours", "mesh", "orbits", "flow", "dots", "spectrum"];
   document.querySelectorAll(".person").forEach((card, i) => {
@@ -515,6 +541,105 @@
     box.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") show(idx + 1);
       if (e.key === "ArrowLeft") show(idx - 1);
+    });
+  }
+
+  /* ---------- People: open a member card in front ---------- */
+  const cards = [...document.querySelectorAll(".person")];
+  if (cards.length && window.HTMLDialogElement) {
+    const dlg = document.createElement("dialog");
+    dlg.className = "profile";
+    dlg.innerHTML = `
+      <div class="profile-art" aria-hidden="true"></div>
+      <div class="profile-photo"><img alt=""><span class="role"></span></div>
+      <div class="profile-body">
+        <p class="profile-group"></p>
+        <h2 class="profile-name"></h2>
+        <p class="profile-affil"></p>
+        <div class="profile-focus"><span class="profile-label">Research focus</span><p></p></div>
+        <blockquote class="profile-motto"></blockquote>
+        <div class="profile-bg"><span class="profile-label">Background</span><ul></ul></div>
+        <div class="socials profile-links"></div>
+      </div>
+      <div class="profile-bar lightbox-nav">
+        <span class="lightbox-count"></span>
+        <button type="button" data-step="-1" aria-label="Previous person">←</button>
+        <button type="button" data-step="1" aria-label="Next person">→</button>
+        <button type="button" data-close aria-label="Close" autofocus>✕</button>
+      </div>`;
+    document.body.appendChild(dlg);
+    const $ = (s) => dlg.querySelector(s);
+    const text = (card, s) => (card.querySelector(s) || {}).textContent || "";
+    let at = 0;
+
+    function groupOf(card) {
+      const group = card.closest(".group");
+      const title = group ? text(group, ".section-head .title") : "";
+      let sub = card.closest(".people").previousElementSibling;
+      while (sub && !sub.classList.contains("subhead")) sub = sub.previousElementSibling;
+      return [sub && sub.closest(".group") === group ? sub.textContent : "", title].filter(Boolean).join(" · ");
+    }
+    function fill(i) {
+      at = (i + cards.length) % cards.length;
+      const card = cards[at];
+      const img = card.querySelector(".avatar img");
+      $(".profile-photo img").src = img ? img.src : "";
+      $(".profile-photo img").alt = img ? img.alt : "";
+      $(".profile-photo .role").textContent = text(card, ".role");
+      $(".profile-group").textContent = groupOf(card);
+      $(".profile-name").textContent = text(card, "h3");
+      $(".profile-affil").textContent = text(card, ".affil");
+      $(".profile-focus p").textContent = text(card, ".focus");
+      $(".profile-focus").hidden = !card.querySelector(".focus");
+      $(".profile-motto").textContent = text(card, ".motto");
+      $(".profile-motto").hidden = !card.querySelector(".motto");
+      const bg = card.querySelector(".more ul");
+      $(".profile-bg ul").innerHTML = bg ? bg.innerHTML : "";
+      $(".profile-bg").hidden = !bg;
+      const links = card.querySelector(".socials");
+      $(".profile-links").innerHTML = links ? links.innerHTML : "";
+      $(".profile-links").hidden = !links;
+      const art = card.querySelector(".person-art svg");
+      $(".profile-art").innerHTML = art ? art.outerHTML : "";
+      $(".lightbox-count").textContent = `${at + 1} / ${cards.length}`;
+      dlg.scrollTop = 0;
+      history.replaceState(null, "", "#" + slug(card));
+      dlg.setAttribute("aria-label", text(card, "h3"));
+      dlg.classList.remove("is-switching"); void dlg.offsetWidth; dlg.classList.add("is-switching");
+    }
+    const slug = (card) => text(card, "h3").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    function open(card) {
+      fill(cards.indexOf(card));
+      if (!dlg.open) dlg.showModal();
+      dlg.scrollTop = 0;
+    }
+    // Shareable links: people.html#firstname-lastname opens that profile
+    const fromHash = () => {
+      const card = cards.find((c) => slug(c) === decodeURIComponent(location.hash.slice(1)));
+      if (card) open(card);
+    };
+    window.addEventListener("hashchange", fromHash);
+    fromHash();
+
+    cards.forEach((card) => {
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-haspopup", "dialog");
+      card.setAttribute("aria-label", "Open profile: " + text(card, "h3"));
+      card.addEventListener("click", (e) => { if (!e.target.closest("a, summary, details")) open(card); });
+      card.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target === card) { e.preventDefault(); open(card); }
+      });
+    });
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg || e.target.closest("[data-close]")) dlg.close();
+      const step = e.target.closest("[data-step]");
+      if (step) fill(at + Number(step.dataset.step));
+    });
+    dlg.addEventListener("close", () => history.replaceState(null, "", location.pathname + location.search));
+    dlg.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") fill(at + 1);
+      if (e.key === "ArrowLeft") fill(at - 1);
     });
   }
 })();
